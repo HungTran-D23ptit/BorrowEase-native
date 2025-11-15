@@ -1,48 +1,43 @@
-import { apiAxios } from "../rootApi";
+import { setAuthTokenAdmin } from "../../utils/localStorage.js";
+import { apiAdminAxios } from "../rootApi";
 
-// Admin Authentication
-export const adminLogin = (data) => {
-  return apiAxios({
+export const adminLogin = async (credentials) => {
+  console.log("[adminLogin] credentials:", credentials);
+  const response = await apiAdminAxios({
     method: "post",
     url: "/admin/auth/login",
-    data: data,
+    data: credentials,
   });
+  if (response.data?.token) {
+    setAuthTokenAdmin(response.data.token);
+  }
+  return response;
 };
 
-export const adminLogout = () => {
-  return apiAxios({
+export const adminForgotPassword = (email) => {
+  return apiAdminAxios({
     method: "post",
-    url: "/admin/auth/logout",
+    url: "/admin/auth/forgot-password",
+    data: { email },
   });
 };
 
-// User Management
-export const getAllUsers = (params = {}) => {
-  return apiAxios({
-    method: "get",
-    url: "/admin/users",
-    params: params,
+export const adminVerifyOTP = (email, otp) => {
+  return apiAdminAxios({
+    method: "post",
+    url: "/admin/auth/verify-otp",
+    data: { email, otp },
   });
 };
 
-export const getUserDetails = (userId) => {
-  return apiAxios({
-    method: "get",
-    url: `/admin/users/${userId}`,
+export const adminResetPassword = async (email, otp, newPassword) => {
+  const response = await apiAdminAxios({
+    method: "post",
+    url: "/admin/auth/reset-password",
+    data: { email, otp, newPassword },
   });
-};
-
-export const updateUserStatus = (userId, data) => {
-  return apiAxios({
-    method: "put",
-    url: `/admin/users/${userId}/status`,
-    data: data,
-  });
-};
-
-export const deleteUser = (userId) => {
-  return apiAxios({
-    method: "delete",
-    url: `/admin/users/${userId}`,
-  });
+  if (response.data?.token) {
+    setAuthTokenAdmin(response.data.token);
+  }
+  return response;
 };
