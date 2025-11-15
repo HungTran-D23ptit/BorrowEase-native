@@ -1,74 +1,67 @@
+import { setAuthToken } from "../../utils/localStorage.js";
 import { apiAxios } from "../rootApi";
 
-// Authentication APIs
-export const login = (data) => {
-  return apiAxios({
+export const userLogin = async (credentials) => {
+  console.log("[userLogin] credentials:", credentials);
+  const response = await apiAxios({
     method: "post",
     url: "/user/auth/login",
-    data: data,
+    data: credentials,
   });
+  if (response.data?.token) {
+    setAuthToken(response.data.token);
+  }
+  return response;
 };
 
-export const register = (data) => {
-  return apiAxios({
+export const userRegister = async (data) => {
+  const response = await apiAxios({
     method: "post",
     url: "/user/auth/register",
     data: data,
   });
+  if (response.data?.token) {
+    setAuthToken(response.data.token);
+  }
+  return response;
 };
 
-export const logout = () => {
-  return apiAxios({
-    method: "post",
-    url: "/user/auth/logout",
-  });
-};
-
-export const loginWithGoogle = (data) => {
-  return apiAxios({
+export const userLoginWithGoogle = async (data) => {
+  const response = await apiAxios({
     method: "post",
     url: "/user/auth/login/google",
     data: data,
   });
+  if (response.data?.token) {
+    setAuthToken(response.data.token);
+  }
+  return response;
 };
 
-// Profile APIs
-export const getProfile = () => {
-  return apiAxios({
-    method: "get",
-    url: "/user/profile",
-  });
-};
-
-export const updateProfile = (data) => {
-  return apiAxios({
-    method: "put",
-    url: "/user/profile",
-    data: data,
-  });
-};
-
-// Password Management APIs
-export const changePassword = (data) => {
-  return apiAxios({
-    method: "put",
-    url: "/user/auth/change-password",
-    data,
-  });
-};
-
-export const forgotPassword = (data) => {
+export const userForgotPassword = (email) => {
   return apiAxios({
     method: "post",
     url: "/user/auth/forgot-password",
-    data,
+    data: { email },
   });
 };
 
-export const resetPassword = (data) => {
+export const userVerifyOTP = (email, otp) => {
   return apiAxios({
     method: "post",
-    url: "/user/auth/reset-password",
-    data,
+    url: "/user/auth/verify-otp",
+    data: { email, otp },
   });
+};
+
+export const userResetPassword = async (email, otp, newPassword) => {
+  const response = await apiAxios({
+    method: "post",
+    url: "/user/auth/reset-password",
+    data: { email, otp, newPassword },
+  });
+  if (response.data?.token) {
+    setAuthToken(response.data.token);
+  }
+  return response;
 };

@@ -1,22 +1,83 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  getAuthToken,
+  getAuthTokenAdmin,
+  initializeTokens,
+} from "@/utils/localStorage";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState<"user" | "admin" | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      await initializeTokens();
+      const userToken = getAuthToken();
+      const adminToken = getAuthTokenAdmin();
+
+      if (userToken) {
+        setIsLoggedIn(true);
+        setUserType("user");
+      } else if (adminToken) {
+        setIsLoggedIn(true);
+        setUserType("admin");
+      } else {
+        setIsLoggedIn(false);
+        setUserType(null);
+      }
+      setLoading(false);
+    };
+
+    initAuth();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen
+              name="auth"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        ) : userType === "user" ? (
+          <>
+            <Stack.Screen
+              name="user"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="admin"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        )}
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
