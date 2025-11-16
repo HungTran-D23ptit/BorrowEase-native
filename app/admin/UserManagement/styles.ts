@@ -1,0 +1,42 @@
+import { StyleSheet } from 'react-native';
+
+export const s = StyleSheet.create({
+  container: {flex: 1, backgroundColor: '#F8FAFC', padding: 16},
+  header: {fontSize: 22, fontWeight: '700', color: '#0F172A', marginBottom: 12},
+  searchRow: {marginBottom: 12},
+  searchInput: {backgroundColor: '#fff', padding: 10, borderRadius: 10, borderWidth: 1, borderColor: '#E6E6E6'},
+  tabRow: {flexDirection: 'row', marginBottom: 12, backgroundColor: 'transparent'},
+  tabBtn: {flex: 1, padding: 10, borderRadius: 999, borderWidth: 1, borderColor: '#E6E6E6', alignItems: 'center', marginRight: 8},
+  tabActive: {backgroundColor: '#2563EB', borderColor: '#2563EB'},
+  tabText: {fontWeight: '600', color: '#0F172A'},
+  tabTextActive: {color: '#fff'},
+
+  card: {backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 10, elevation: 1},
+  cardHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+  name: {fontSize: 16, fontWeight: '700'},
+  code: {color: '#6B7280', marginTop: 4},
+  actionBtn: {paddingVertical: 6, paddingHorizontal: 10, backgroundColor: '#F1F5F9', borderRadius: 8},
+  actionText: {fontWeight: '700', color: '#0F172A'},
+  caretBtn: {marginLeft: 8, paddingHorizontal: 10, paddingVertical: 6},
+  caretText: {fontSize: 12, color: '#475569'},
+  cardBody: {marginTop: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 10},
+  label: {color: '#374151', marginBottom: 6},
+  value: {fontWeight: '600', color: '#111827'},
+
+  addBtn: {position: 'absolute', left: '50%', transform: [{translateX: -120}], bottom: 20, width: 240, height: 48, backgroundColor: '#2563EB', borderRadius: 12, alignItems: 'center', justifyContent: 'center', elevation: 3},
+  addBtnText: {color: '#fff', fontWeight: '700'},
+
+  modalContainer: {flex: 1, justifyContent: 'flex-end'},
+  modalCard: {height: '85%', backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 16},
+  modalTitle: {fontSize: 18, fontWeight: '700', marginBottom: 12},
+  avatarPlaceholder: {height: 80, borderRadius: 40, backgroundColor: '#2563EB', alignItems: 'center', justifyContent: 'center', marginBottom: 12},
+  fieldLabel: {fontSize: 13, color: '#374151', marginBottom: 6},
+  input: {backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginBottom: 12, borderWidth: 1, borderColor: '#E5E7EB'},
+  optionRow: {flexDirection: 'row', marginBottom: 12},
+  optionBtn: {paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: '#E5E7EB', marginRight: 8},
+  optionActive: {backgroundColor: '#2563EB', borderColor: '#2563EB'},
+  optionText: {color: '#374151'},
+  optionTextActive: {color: '#fff'},
+  modalActionsRow: {flexDirection: 'row', justifyContent: 'space-between', marginTop: 8},
+  modalActionBtn: {flex: 1, padding: 12, borderRadius: 8, alignItems: 'center', marginHorizontal: 6},
+});
