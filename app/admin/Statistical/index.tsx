@@ -1,24 +1,11 @@
-// React Native TypeScript screen for device lending/return statistics
-// Place this file in your project (e.g. app/admin/Statistical/index.tsx)
-// Required packages (install before running):
-// 1) react-native-svg
-//    yarn add react-native-svg
-//    (If using Expo: expo install react-native-svg)
-// 2) react-native-svg-charts
-//    yarn add react-native-svg-charts d3-shape d3-scale
-// 3) react-native-gesture-handler (for chips/buttons) - if not already installed
-//    yarn add react-native-gesture-handler
-// 4) Optional: react-native-linear-gradient for nicer cards
-//    yarn add react-native-linear-gradient
-
 import React, { useMemo, useState } from 'react';
 import {
-    Dimensions,
-    FlatList,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  FlatList,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { PieChart } from 'react-native-svg-charts';
 import { styles } from './styles';
