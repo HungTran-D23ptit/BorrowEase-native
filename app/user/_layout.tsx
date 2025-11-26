@@ -22,7 +22,7 @@ export default function UserLayout() {
           borderTopColor: '#F0F0F0',
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 12, // Tăng nhẹ lại cỡ chữ vì chỉ còn 4 tab, nhìn sẽ thoáng hơn
           fontWeight: '600',
           marginBottom: 0, 
         },
@@ -30,10 +30,9 @@ export default function UserLayout() {
     >
       {/* 1. TRANG CHỦ */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="home" thành "home/index"
         name="home/index"
         options={{
-          title: 'Trang chủ', // Tên hiển thị trên Tab
+          title: 'Trang chủ',
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
               name={focused ? "home-variant" : "home-variant-outline"} 
@@ -46,7 +45,6 @@ export default function UserLayout() {
       
       {/* 2. THIẾT BỊ */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="explore" thành "explore/index"
         name="explore/index"
         options={{
           title: 'Thiết bị',
@@ -60,15 +58,14 @@ export default function UserLayout() {
         }}
       />
       
-      {/* 3. LỊCH SỬ */}
+      {/* 3. QUẢN LÝ (Đã đẩy lên vị trí thứ 3) */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="history" thành "history/index"
-        name="history/index"
+        name="management/index"
         options={{
-          title: 'Lịch sử',
+          title: 'Quản lý',
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
-              name={focused ? "clock-time-eight" : "clock-time-eight-outline"} 
+              name={focused ? "tune" : "tune-variant"} 
               size={26} 
               color={color} 
             />
@@ -78,7 +75,6 @@ export default function UserLayout() {
       
       {/* 4. CÁ NHÂN */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="profile" thành "profile/index"
         name="profile/index"
         options={{
           title: 'Cá nhân',
@@ -91,13 +87,22 @@ export default function UserLayout() {
           ),
         }}
       />
+
+      {/* --- CÁC MÀN HÌNH ẨN KHỎI TAB BAR (href: null) --- */}
+
+      {/* Ẩn luôn tab History cũ nếu file vẫn còn trong thư mục */}
       <Tabs.Screen
-        name="device/[id]" // Tên file dynamic route
+        name="history/index"
         options={{
-          href: null, // Quan trọng: null nghĩa là không hiện icon/nút
-          headerShown: false, // Ẩn luôn header mặc định nếu muốn
+          href: null, 
+          headerShown: false,
         }}
       />
+
+      <Tabs.Screen name="device/[id]" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="borrow/[id]" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="management/detail/[id]" options={{ href: null, headerShown: false }} />
+      
     </Tabs>
   );
 }
