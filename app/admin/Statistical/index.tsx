@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { PieChart } from 'react-native-svg-charts';
+import { PieChart } from 'react-native-gifted-charts';
 import { styles } from './styles';
 
 const {width} = Dimensions.get('window');
@@ -72,7 +72,7 @@ export default function StatisticsScreen() {
           <View style={styles.centered}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <View style={{width: 140, height: 140}}>
-                <PieChart style={{height: 140}} data={pieData} outerRadius={'95%'} innerRadius={'60%'} />
+                <PieChart data={pieData} donut  radius={70}  innerRadius={40} />
 
                 <View style={styles.pieCenterTextWrap} pointerEvents="none">
                   <Text style={styles.pieCenterPercent}>25%</Text>
