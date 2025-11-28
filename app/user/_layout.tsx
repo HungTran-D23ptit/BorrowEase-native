@@ -15,8 +15,8 @@ export default function UserLayout() {
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          height: 80, 
-          paddingBottom: 25, 
+          height: 80, // Chiều cao 80 để thoáng
+          paddingBottom: 25, // Đẩy icon lên trên thanh Home ảo
           paddingTop: 10,    
           borderTopWidth: 1,
           borderTopColor: '#F0F0F0',
@@ -30,10 +30,9 @@ export default function UserLayout() {
     >
       {/* 1. TRANG CHỦ */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="home" thành "home/index"
         name="home/index"
         options={{
-          title: 'Trang chủ', // Tên hiển thị trên Tab
+          title: 'Trang chủ', 
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
               name={focused ? "home-variant" : "home-variant-outline"} 
@@ -46,7 +45,6 @@ export default function UserLayout() {
       
       {/* 2. THIẾT BỊ */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="explore" thành "explore/index"
         name="explore/index"
         options={{
           title: 'Thiết bị',
@@ -62,7 +60,6 @@ export default function UserLayout() {
       
       {/* 3. LỊCH SỬ */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="history" thành "history/index"
         name="history/index"
         options={{
           title: 'Lịch sử',
@@ -78,7 +75,6 @@ export default function UserLayout() {
       
       {/* 4. CÁ NHÂN */}
       <Tabs.Screen
-        // QUAN TRỌNG: Sửa name="profile" thành "profile/index"
         name="profile/index"
         options={{
           title: 'Cá nhân',
@@ -91,11 +87,14 @@ export default function UserLayout() {
           ),
         }}
       />
+      
+      {/* 5. ẨN NÚT CHI TIẾT THIẾT BỊ */}
       <Tabs.Screen
-        name="device/[id]" // Tên file dynamic route
+        // CẬP NHẬT QUAN TRỌNG: Thêm "/index" vào cuối vì bạn đã đổi thành thư mục
+        name="device/[id]/index" 
         options={{
           href: null, // Quan trọng: null nghĩa là không hiện icon/nút
-          headerShown: false, // Ẩn luôn header mặc định nếu muốn
+          headerShown: false, 
         }}
       />
     </Tabs>
