@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+// 👇 Import styles từ file bên cạnh
+import { styles } from './style';
 
 // --- MOCK DATA ---
 const MOCK_DETAIL = {
@@ -26,7 +27,7 @@ const MOCK_DETAIL = {
 
 export default function DeviceDetailScreen() {
   const { id } = useLocalSearchParams(); 
-  const router = useRouter(); // 1. Khởi tạo Router
+  const router = useRouter(); 
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, index) => (
@@ -101,11 +102,8 @@ export default function DeviceDetailScreen() {
       <View style={styles.bottomContainer}>
          <TouchableOpacity 
             style={styles.borrowButton} 
-            // 👇 QUAN TRỌNG NHẤT: Code chuyển trang nằm ở đây 👇
+            // 👇 QUAN TRỌNG: Code chuyển trang đã được sửa đúng
             onPress={() => {
-                // console.log('Mượn'); <-- Code cũ của bạn là dòng này
-                
-                // Code mới: Chuyển sang trang borrow/[id]
                 router.push(`/user/borrow/${MOCK_DETAIL.id}` as any);
             }}
          >
@@ -116,30 +114,3 @@ export default function DeviceDetailScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  imageContainer: { width: '100%', height: 300, backgroundColor: '#F5F5F5', justifyContent: 'center', alignItems: 'center' },
-  mainImage: { width: '80%', height: '80%', resizeMode: 'contain' },
-  backButton: { position: 'absolute', top: 50, left: 20, zIndex: 10, width: 40, height: 40, justifyContent: 'center', borderRadius: 20 },
-  dotsContainer: { position: 'absolute', bottom: 15, flexDirection: 'row', alignSelf: 'center' },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#DDD', marginHorizontal: 4 },
-  activeDot: { backgroundColor: '#FFF', borderWidth: 1, borderColor: '#ccc' },
-  contentContainer: { padding: 20 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  deviceName: { fontSize: 22, fontWeight: 'bold', color: '#000' },
-  quantityText: { fontSize: 12, fontWeight: 'bold', color: '#333' },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  ratingScore: { fontSize: 14, fontWeight: '600', color: '#666' },
-  reviewCount: { fontSize: 14, color: '#999' },
-  descriptionText: { fontSize: 14, color: '#444', lineHeight: 22, marginBottom: 25, textAlign: 'justify' },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#000' },
-  reviewCard: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#EEE', padding: 15, marginBottom: 15, elevation: 2 },
-  reviewHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  avatar: { width: 30, height: 30, borderRadius: 15, marginRight: 10, backgroundColor: '#DDD' },
-  reviewerName: { fontWeight: 'bold', fontSize: 14 },
-  reviewComment: { fontSize: 13, color: '#555', lineHeight: 18 },
-  bottomContainer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', paddingVertical: 15, paddingHorizontal: 20, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
-  borrowButton: { backgroundColor: '#00D2FF', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 14, borderRadius: 30, elevation: 5 },
-  borrowText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginRight: 8 },
-});
