@@ -58,7 +58,52 @@ export default function AdminLayout() {
         }}
       />
 
-      {/* 3. CÁ NHÂN */}
+      {/* 3. THÔNG BÁO */}
+      <Tabs.Screen
+        name="notifications/index"
+        options={{
+          title: 'Thông báo',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "notifications" : "notifications-outline"}
+              size={26}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      {/* 4. THỐNG KÊ */}
+      <Tabs.Screen
+        name="Statistical/index"
+        options={{
+          title: 'Thống kê',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "stats-chart" : "stats-chart-outline"}
+              size={26}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      {/* 5. QUẢN LÝ NGƯỜI DÙNG */}
+      <Tabs.Screen
+        name="UserManagement/index"
+        options={{
+          title: 'Người dùng',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "people" : "people-outline"}
+              size={26}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      {/* 6. CÁ NHÂN */}
       <Tabs.Screen
         name="profile/index"
         options={{

@@ -1,0 +1,217 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F9FAFB',
+        paddingHorizontal: 16,
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginTop: 16,
+        marginBottom: 16,
+    },
+    cardRow: {
+        flexDirection: 'row',
+        marginBottom: 16,
+    },
+    cardLarge: {
+        flex: 2,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginRight: 8,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    },
+    cardSmall: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginLeft: 8,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cardTitle: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#6B7280',
+        marginBottom: 12,
+    },
+    centered: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    pieCenterTextWrap: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pieCenterPercent: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1F2937',
+    },
+    pieCenterSub: {
+        fontSize: 11,
+        color: '#9CA3AF',
+        marginTop: 2,
+    },
+    legendRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    legendColor: {
+        width: 12,
+        height: 12,
+        borderRadius: 3,
+        marginRight: 8,
+    },
+    legendLabel: {
+        fontSize: 12,
+        color: '#4B5563',
+        marginRight: 6,
+    },
+    legendValue: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    bigPercent: {
+        fontSize: 36,
+        fontWeight: '700',
+        color: '#10B981',
+        marginVertical: 8,
+    },
+    cardSub: {
+        fontSize: 11,
+        color: '#9CA3AF',
+    },
+    filterRow: {
+        marginBottom: 12,
+    },
+    filterRowSmall: {
+        marginBottom: 16,
+    },
+    chip: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        marginRight: 8,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    },
+    chipActive: {
+        backgroundColor: '#3B82F6',
+        borderColor: '#3B82F6',
+    },
+    chipText: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    chipTextActive: {
+        color: '#FFFFFF',
+    },
+    chipSmall: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        backgroundColor: '#F3F4F6',
+        marginRight: 6,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    },
+    chipSmallActive: {
+        backgroundColor: '#10B981',
+        borderColor: '#10B981',
+    },
+    chipSmallText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    chipSmallTextActive: {
+        color: '#FFFFFF',
+    },
+    listCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 12,
+    },
+    itemRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    itemTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    itemSubtitle: {
+        fontSize: 12,
+        color: '#9CA3AF',
+    },
+    itemPercent: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#3B82F6',
+        marginBottom: 2,
+    },
+    itemSmall: {
+        fontSize: 11,
+        color: '#9CA3AF',
+    },
+    recentRow: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    recentTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    recentSub: {
+        fontSize: 12,
+        color: '#6B7280',
+    },
+    recentTime: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    recentStatus: {
+        fontSize: 11,
+        color: '#10B981',
+        fontWeight: '500',
+    },
+});
