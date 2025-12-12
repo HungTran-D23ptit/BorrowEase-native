@@ -76,7 +76,7 @@ export default function StatisticsScreen() {
                     if (mounted) setApiDevices(d.map((x:any,i:number) => ({ id: x.id || x._id || `dev-${i}`, name: x.name || x.deviceName || `Device ${i}`, type: x.type || x.category || 'Camera', status: x.status || x.state || 'Đang mượn', borrower: x.borrower?.name || x.user || 'Chưa', time: x.updatedAt || x.createdAt || 'N/A', active: x.active ?? true })));
                 }
             } catch (e) {
-                // ignore, fallback to mock
+                
             }
         })();
         return () => { mounted = false; };

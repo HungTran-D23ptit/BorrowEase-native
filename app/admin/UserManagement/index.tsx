@@ -1,7 +1,9 @@
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import {
     Alert,
     FlatList,
+    Image,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -27,6 +29,7 @@ type User = {
     status: 'Đang hoạt động' | 'Ngưng hoạt động';
     accountStatus: 'Mở tài khoản' | 'Khóa tài khoản';
     role: Role;
+    avatar?: string | null;
 };
 
 const SAMPLE_USERS: User[] = Array.from({ length: 8 }).map((_, i) => ({
@@ -40,6 +43,7 @@ const SAMPLE_USERS: User[] = Array.from({ length: 8 }).map((_, i) => ({
     status: i % 2 === 0 ? 'Đang hoạt động' : 'Ngưng hoạt động',
     accountStatus: i % 3 === 0 ? 'Khóa tài khoản' : 'Mở tài khoản',
     role: i % 2 === 0 ? 'Edit' : 'View',
+    avatar: null,
 }));
 
 export default function UserManagement() {
@@ -47,8 +51,6 @@ export default function UserManagement() {
     const [users, setUsers] = useState<User[]>(SAMPLE_USERS);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [search, setSearch] = useState('');
-
-
     const [modalVisible, setModalVisible] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
 
@@ -89,9 +91,18 @@ export default function UserManagement() {
         setEditingUser(null);
     }
 
-    const filtered = users.filter(u =>
-        `${u.name} ${u.code} ${u.email}`.toLowerCase().includes(search.toLowerCase()),
-    );
+    // ⭐ Lọc theo search + theo tab + theo role
+    const filtered = users.filter(u => {
+        const matchSearch =
+            `${u.name} ${u.code} ${u.email}`.toLowerCase().includes(search.toLowerCase());
+
+        if (!matchSearch) return false;
+
+        if (tab === 'user') return u.role === 'View';
+        if (tab === 'admin') return u.role === 'Edit';
+
+        return true;
+    });
 
     return (
         <SafeAreaView style={s.container}>
@@ -126,20 +137,36 @@ export default function UserManagement() {
                 renderItem={({ item }) => (
                     <View style={s.card}>
                         <View style={s.cardHeader}>
-                            <View>
-                                <Text style={s.name}>{item.name}</Text>
-                                <Text style={s.code}>{item.code}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Image
+                                    source={
+                                        item.avatar
+                                            ? { uri: item.avatar }
+                                            : require('./default-avatar.png')
+                                    }
+                                    style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
+                                />
+                                <View>
+                                    <Text style={s.name}>{item.name}</Text>
+                                    <Text style={s.code}>{item.code}</Text>
+                                </View>
                             </View>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <TouchableOpacity style={s.actionBtn} onPress={() => onEdit(item)}>
                                     <Text style={s.actionText}>Sửa</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[s.actionBtn, { marginLeft: 8 }]} onPress={() => onDelete(item)}>
+                                <TouchableOpacity
+                                    style={[s.actionBtn, { marginLeft: 8 }]}
+                                    onPress={() => onDelete(item)}>
                                     <Text style={[s.actionText, { color: '#DC2626' }]}>Xóa</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={s.caretBtn} onPress={() => onToggleExpand(item.id)}>
-                                    <Text style={s.caretText}>{expandedId === item.id ? '▲' : '▼'}</Text>
+                                <TouchableOpacity
+                                    style={s.caretBtn}
+                                    onPress={() => onToggleExpand(item.id)}>
+                                    <Text style={s.caretText}>
+                                        {expandedId === item.id ? '▲' : '▼'}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -147,12 +174,15 @@ export default function UserManagement() {
                         {expandedId === item.id && (
                             <View style={s.cardBody}>
                                 <Text style={s.label}>Số điện thoại: <Text style={s.value}>{item.phone}</Text></Text>
+                                <Text style={s.label}>Mã người dùng <Text style={s.value}>{item.phone}</Text></Text>
                                 <Text style={s.label}>Email: <Text style={s.value}>{item.email}</Text></Text>
                                 <Text style={s.label}>Địa chỉ: <Text style={s.value}>{item.address}</Text></Text>
                                 <Text style={s.label}>Mật khẩu: <Text style={s.value}>{item.password}</Text></Text>
                                 <Text style={s.label}>Trạng thái: <Text style={s.value}>{item.status}</Text></Text>
                                 <Text style={s.label}>Trạng thái tài khoản: <Text style={s.value}>{item.accountStatus}</Text></Text>
-                                {tab === 'admin' && <Text style={s.label}>Quyền: <Text style={s.value}>{item.role}</Text></Text>}
+                                {tab === 'admin' && (
+                                    <Text style={s.label}>Quyền: <Text style={s.value}>{item.role}</Text></Text>
+                                )}
                             </View>
                         )}
                     </View>
@@ -176,6 +206,7 @@ export default function UserManagement() {
     );
 }
 
+
 function UserFormModal({
     visible,
     onClose,
@@ -196,6 +227,7 @@ function UserFormModal({
     const [status, setStatus] = useState<User['status']>(initialData?.status ?? 'Đang hoạt động');
     const [accountStatus, setAccountStatus] = useState<User['accountStatus']>(initialData?.accountStatus ?? 'Mở tài khoản');
     const [role, setRole] = useState<Role>(initialData?.role ?? 'View');
+    const [avatar, setAvatar] = useState<string | null>(initialData?.avatar ?? null);
 
     React.useEffect(() => {
         setName(initialData?.name ?? '');
@@ -207,7 +239,26 @@ function UserFormModal({
         setStatus(initialData?.status ?? 'Đang hoạt động');
         setAccountStatus(initialData?.accountStatus ?? 'Mở tài khoản');
         setRole(initialData?.role ?? 'View');
+        setAvatar(initialData?.avatar ?? null);
     }, [initialData, visible]);
+
+    async function pickImage() {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Lỗi', 'Ứng dụng cần quyền truy cập ảnh');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setAvatar(result.assets[0].uri);
+        }
+    }
 
     function handleSave() {
         if (!name.trim() || !email.trim()) {
@@ -226,22 +277,40 @@ function UserFormModal({
             status,
             accountStatus,
             role,
+            avatar,
         };
+
         onSave(payload);
     }
 
     return (
         <Modal visible={visible} animationType="slide" transparent>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.modalContainer}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={s.modalContainer}
+            >
                 <View style={s.modalCard}>
-                    <Text style={s.modalTitle}>{initialData ? 'Chỉnh sửa thông tin cá nhân' : 'Thêm người dùng'}</Text>
+                    <Text style={s.modalTitle}>
+                        {initialData ? 'Chỉnh sửa thông tin cá nhân' : 'Thêm người dùng'}
+                    </Text>
+
                     <ScrollView>
-                        <TouchableOpacity style={s.avatarPlaceholder}>
-                            <Text style={{ color: '#fff' }}>Thay đổi ảnh đại diện</Text>
+                        {/* Avatar */}
+                        <TouchableOpacity style={s.avatarPlaceholder} onPress={pickImage}>
+                            {avatar ? (
+                                <Image
+                                    source={{ uri: avatar }}
+                                    style={{ width: 80, height: 80, borderRadius: 40 }}
+                                />
+                            ) : (
+                                <Text style={{ color: '#fff' }}>Thay đổi ảnh đại diện</Text>
+                            )}
                         </TouchableOpacity>
 
                         <Text style={s.fieldLabel}>Họ và tên</Text>
                         <TextInput value={name} onChangeText={setName} style={s.input} />
+                        <Text style={s.fieldLabel}>Mã người dùng</Text>
+                        <TextInput value={code} onChangeText={setCode} style={s.input} />
 
                         <Text style={s.fieldLabel}>Email</Text>
                         <TextInput value={email} onChangeText={setEmail} style={s.input} keyboardType="email-address" />
@@ -260,7 +329,6 @@ function UserFormModal({
                             <TouchableOpacity onPress={() => setStatus('Đang hoạt động')} style={[s.optionBtn, status === 'Đang hoạt động' && s.optionActive]}>
                                 <Text style={status === 'Đang hoạt động' ? s.optionTextActive : s.optionText}>Đang hoạt động</Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity onPress={() => setStatus('Ngưng hoạt động')} style={[s.optionBtn, status === 'Ngưng hoạt động' && s.optionActive]}>
                                 <Text style={status === 'Ngưng hoạt động' ? s.optionTextActive : s.optionText}>Ngưng hoạt động</Text>
                             </TouchableOpacity>
@@ -271,7 +339,6 @@ function UserFormModal({
                             <TouchableOpacity onPress={() => setAccountStatus('Mở tài khoản')} style={[s.optionBtn, accountStatus === 'Mở tài khoản' && s.optionActive]}>
                                 <Text style={accountStatus === 'Mở tài khoản' ? s.optionTextActive : s.optionText}>Mở tài khoản</Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity onPress={() => setAccountStatus('Khóa tài khoản')} style={[s.optionBtn, accountStatus === 'Khóa tài khoản' && s.optionActive]}>
                                 <Text style={accountStatus === 'Khóa tài khoản' ? s.optionTextActive : s.optionText}>Khóa tài khoản</Text>
                             </TouchableOpacity>
