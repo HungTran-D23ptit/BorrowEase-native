@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
     cardRow: {
         flexDirection: 'row',
         marginBottom: 16,
+        flexWrap: 'wrap',
     },
     cardLarge: {
         flex: 2,
@@ -25,6 +26,11 @@ export const styles = StyleSheet.create({
         marginRight: 8,
         borderWidth: 1,
         borderColor: '#E5E7EB',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
     },
     cardSmall: {
         flex: 1,
@@ -36,6 +42,11 @@ export const styles = StyleSheet.create({
         borderColor: '#E5E7EB',
         justifyContent: 'center',
         alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
     },
     cardTitle: {
         fontSize: 13,
@@ -70,6 +81,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 6,
+        width: '100%'
     },
     legendColor: {
         width: 12,
@@ -81,11 +93,13 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         color: '#4B5563',
         marginRight: 6,
+        flex: 1,
     },
     legendValue: {
         fontSize: 12,
         fontWeight: '600',
         color: '#1F2937',
+        marginLeft: 8,
     },
     bigPercent: {
         fontSize: 36,
@@ -132,6 +146,7 @@ export const styles = StyleSheet.create({
         marginRight: 6,
         borderWidth: 1,
         borderColor: '#E5E7EB',
+        elevation: 1,
     },
     chipSmallActive: {
         backgroundColor: '#10B981',
@@ -145,6 +160,20 @@ export const styles = StyleSheet.create({
     chipSmallTextActive: {
         color: '#FFFFFF',
     },
+    cardFull: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
+    },
+
     listCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
@@ -152,6 +181,90 @@ export const styles = StyleSheet.create({
         marginBottom: 16,
         borderWidth: 1,
         borderColor: '#E5E7EB',
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
+    },
+
+    /* Modal styles */
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.35)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        width: '92%',
+        maxHeight: '80%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        elevation: 4,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    modalTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#111827',
+    },
+    modalClose: {
+        color: '#6B7280',
+        fontWeight: '600',
+    },
+    modalFilters: {
+        marginBottom: 8,
+    },
+    modalTabs: {
+        flexDirection: 'row',
+        marginBottom: 8,
+    },
+    tabBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        marginRight: 8,
+    },
+    tabBtnActive: {
+        backgroundColor: '#3B82F6',
+    },
+    tabText: {
+        color: '#6B7280',
+        fontWeight: '600',
+    },
+    tabTextActive: {
+        color: '#FFFFFF',
+    },
+    modalList: {
+        flex: 1,
+        marginTop: 8,
+    },
+    modalRow: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    miniBar: {
+        width: '100%',
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+    },
+    progressTrack: {
+        height: 12,
+        backgroundColor: '#E5E7EB',
+        borderRadius: 999,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        backgroundColor: '#34D399',
     },
     sectionTitle: {
         fontSize: 16,
@@ -177,6 +290,10 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         color: '#9CA3AF',
     },
+    metaText: {
+        fontSize: 12,
+        color: '#9CA3AF',
+    },
     itemPercent: {
         fontSize: 18,
         fontWeight: '700',
@@ -186,6 +303,58 @@ export const styles = StyleSheet.create({
     itemSmall: {
         fontSize: 11,
         color: '#9CA3AF',
+    },
+    statusSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    statusItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8FAFC',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        marginRight: 8,
+        marginBottom: 8,
+    },
+    deviceTypeCard: {
+        backgroundColor: '#FFFFFF',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 10,
+        marginRight: 8,
+        marginBottom: 8,
+        minWidth: 140,
+        elevation: 1,
+    },
+    deviceTypeCardActive: {
+        borderColor: '#3B82F6',
+        backgroundColor: '#EFF6FF',
+    },
+    deviceTypeCardTitle: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    deviceTypeCardMeta: {
+        fontSize: 12,
+        color: '#6B7280',
+    },
+    statusDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 3,
+    },
+    statusLabel: {
+        fontSize: 12,
+        color: '#374151',
+        fontWeight: '600',
+    },
+    statusCount: {
+        fontSize: 11,
+        color: '#6B7280',
     },
     recentRow: {
         flexDirection: 'row',
