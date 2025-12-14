@@ -70,7 +70,6 @@ export default function ManagementScreen() {
     };
 
     const handleSelectDropdownItem = (item: string, type: 'category' | 'status') => {
-        console.log(`Đã chọn ${type}:`, item);
         setShowCategoryDropdown(false);
         setShowStatusDropdown(false);
     };

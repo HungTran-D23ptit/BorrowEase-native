@@ -1,157 +1,145 @@
 import { StyleSheet } from 'react-native';
 
-const APP_COLORS = {
-  background: '#FFFFFF',
-  textMain: '#111111',
-  textSecondary: '#666666',
-  primary: '#FF6B35',
-  primaryLight: '#FFE5DC',
-};
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
-    backgroundColor: APP_COLORS.background,
+    backgroundColor: '#F5F7FA',
   },
 
-  // Header Styles
-  header: {
+  // Header Gradient
+  headerGradient: {
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 25,
+    marginBottom: 24,
   },
   welcomeSection: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#EEE',
-    marginRight: 12,
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-  },
-  greetingText: {
-    fontSize: 14,
-    color: APP_COLORS.textSecondary,
-    marginBottom: 2,
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: APP_COLORS.textMain,
-  },
-  notificationButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: APP_COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    backgroundColor: '#F44336',
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notificationBadgeText: {
-    color: '#FFF',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-
-  // Section Styles
-  section: {
-    paddingHorizontal: 20,
-    marginBottom: 25,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: APP_COLORS.textMain,
-    marginBottom: 15,
-  },
-  seeAllText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: APP_COLORS.primary,
-  },
-
-  // Stats Grid
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  statIconContainer: {
     width: 56,
     height: 56,
     borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  greetingText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 4,
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+
+  // Header Stats
+  headerStats: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 16,
+    padding: 16,
+    justifyContent: 'space-around',
+  },
+  headerStatItem: {
+    alignItems: 'center',
+  },
+  headerStatValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  headerStatLabel: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  headerStatDivider: {
+    width: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+
+  // Section
+  section: {
+    paddingHorizontal: 20,
+    marginTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+
+  // Status Grid
+  statusGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -6,
+  },
+  statusCard: {
+    width: '48%',
+    marginHorizontal: '1%',
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  statusIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
   },
-  statValue: {
+  statusValue: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: APP_COLORS.textMain,
+    fontWeight: '700',
+    color: '#1F2937',
     marginBottom: 4,
   },
-  statTitle: {
+  statusLabel: {
     fontSize: 13,
-    color: APP_COLORS.textSecondary,
-    textAlign: 'center',
+    fontWeight: '600',
+    color: '#6B7280',
   },
 
-  // Quick Actions Grid
+  // Quick Actions
   quickActionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    marginHorizontal: -6,
   },
   quickActionCard: {
     width: '48%',
+    marginHorizontal: '1%',
+    marginBottom: 12,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   quickActionIcon: {
     width: 64,
@@ -162,54 +150,83 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   quickActionTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textMain,
-    marginBottom: 4,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 8,
     textAlign: 'center',
   },
-  quickActionDesc: {
-    fontSize: 12,
-    color: APP_COLORS.textSecondary,
-    textAlign: 'center',
-  },
-
-  // Activity Items
-  activityItem: {
+  quickActionBadge: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
   },
-  activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  quickActionCount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#334155',
+    marginRight: 4,
+  },
+  quickActionLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+  },
+
+  // System Card
+  systemCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  systemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  systemIconWrapper: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F9FAFB',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  activityContent: {
+  systemInfo: {
     flex: 1,
   },
-  activityUser: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: APP_COLORS.textMain,
-    marginBottom: 2,
-  },
-  activityDesc: {
+  systemLabel: {
     fontSize: 13,
-    color: APP_COLORS.textSecondary,
+    color: '#6B7280',
+    marginBottom: 4,
   },
-  activityDevice: {
-    fontWeight: '600',
-    color: APP_COLORS.textMain,
+  systemValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
   },
-  activityTime: {
-    fontSize: 12,
-    color: APP_COLORS.textSecondary,
+  systemPercentBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  systemPercent: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#34C759',
+  },
+  systemDivider: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginVertical: 4,
   },
 });

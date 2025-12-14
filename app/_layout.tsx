@@ -1,3 +1,10 @@
+import { ToastProvider } from "@/contexts/ToastContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  getAuthToken,
+  getAuthTokenAdmin,
+  initializeTokens,
+} from "@/utils/localStorage";
 import {
   DarkTheme,
   DefaultTheme,
@@ -7,12 +14,6 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import {
-  getAuthToken,
-  getAuthTokenAdmin,
-  initializeTokens,
-} from "@/utils/localStorage";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -46,19 +47,21 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-       
-        {!isLoggedIn ? (
-          <Stack.Screen name="auth" />
-        ) : userType === "user" ? (
-          <Stack.Screen name="user" />
-        ) : (
-          <Stack.Screen name="admin" />
-        )}
+      <ToastProvider>
+        <Stack screenOptions={{ headerShown: false }}>
 
-      </Stack>
+          {!isLoggedIn ? (
+            <Stack.Screen name="auth" />
+          ) : userType === "user" ? (
+            <Stack.Screen name="user" />
+          ) : (
+            <Stack.Screen name="admin" />
+          )}
 
-      <StatusBar style="auto" />
+        </Stack>
+
+        <StatusBar style="auto" />
+      </ToastProvider>
     </ThemeProvider>
   );
 }

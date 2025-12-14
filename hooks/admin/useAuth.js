@@ -28,10 +28,19 @@ export const useAdminLogin = () => {
     }
   };
 
-  const logout = () => {
-    clearAuthTokenAdmin();
-    setSuccess(false);
-    setError(null);
+  const logout = async () => {
+    try {
+      // Gọi API logout trên backend
+      await adminAuthService.adminLogout();
+    } catch (err) {
+      // Vẫn xóa token local ngay cả khi API thất bại
+      console.error("Logout API error:", err);
+    } finally {
+      // Luôn xóa token local và reset state
+      clearAuthTokenAdmin();
+      setSuccess(false);
+      setError(null);
+    }
   };
 
   return { login, logout, loading, error, success };

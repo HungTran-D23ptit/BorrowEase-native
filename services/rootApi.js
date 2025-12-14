@@ -3,6 +3,31 @@ import { getAuthToken, getAuthTokenAdmin } from "../utils/localStorage.js";
 
 const baseUrl = "http://10.0.2.2:3456";
 
+// Utility function để xử lý image URL
+export const getImageUrl = (imageUrl) => {
+  if (!imageUrl) return null;
+
+  // Nếu đã là full URL (http/https)
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    // Thay thế localhost bằng 10.0.2.2 cho Android emulator
+    return imageUrl.replace('localhost', '10.0.2.2').replace('http://localhost', 'http://10.0.2.2');
+  }
+
+  // Nếu là relative path
+  if (imageUrl.startsWith('uploads/') || imageUrl.startsWith('/uploads/')) {
+    const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+    return `${baseUrl}/static${cleanPath}`;
+  }
+
+  // Nếu đã có /static
+  if (imageUrl.startsWith('/static/')) {
+    return `${baseUrl}${imageUrl}`;
+  }
+
+  // Default: thêm /static/uploads/
+  return `${baseUrl}/static/uploads/${imageUrl}`;
+};
+
 export const apiAxios = axios.create({
   withCredentials: true,
   baseURL: baseUrl,

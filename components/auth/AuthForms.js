@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -13,6 +14,7 @@ export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (emailValue) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,37 +57,71 @@ export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
       return;
     }
 
-    console.log("[LoginForm] Sending:", { email, password });
     onLogin(email, password);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={[styles.input, errors.email && styles.inputError]}
-        placeholder="Enter your email"
-        value={email}
-        onChangeText={handleEmailChange}
-        editable={!loading}
-        placeholderTextColor="#999"
-        keyboardType="email-address"
-      />
-      {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="mail-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.email && styles.inputError]}
+          placeholder="Email của bạn"
+          value={email}
+          onChangeText={handleEmailChange}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+      {errors.email && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.email}</Text>
+        </View>
+      )}
 
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={[styles.input, errors.password && styles.inputError]}
-        placeholder="Enter password"
-        value={password}
-        onChangeText={handlePasswordChange}
-        secureTextEntry
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
-      {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.password && styles.inputError]}
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={handlePasswordChange}
+          secureTextEntry={!showPassword}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Ionicons
+            name={showPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="rgba(255, 255, 255, 0.6)"
+          />
+        </TouchableOpacity>
+      </View>
+      {errors.password && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.password}</Text>
+        </View>
+      )}
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -95,9 +131,12 @@ export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>
-            Login as {userType === "user" ? "User" : "Admin"}
-          </Text>
+          <>
+            <Text style={styles.buttonText}>
+              {userType === "user" ? "Đăng nhập" : "Đăng nhập Admin"}
+            </Text>
+            <Ionicons name="arrow-forward" size={20} color="#fff" />
+          </>
         )}
       </TouchableOpacity>
     </View>
@@ -113,6 +152,8 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateEmail = (emailValue) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -143,6 +184,8 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
     }
     if (!password.trim()) {
       newErrors.password = "Password không được bỏ trống";
+    } else if (password.length < 6) {
+      newErrors.password = "Password phải có ít nhất 6 ký tự";
     }
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password không trùng khớp";
@@ -158,56 +201,119 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        style={[styles.input, errors.username && styles.inputError]}
-        placeholder="Choose a username"
-        value={formData.username}
-        onChangeText={(value) => handleChange("username", value)}
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
-      {errors.username && <Text style={styles.error}>{errors.username}</Text>}
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={[styles.input, errors.email && styles.inputError]}
-        placeholder="Enter your email"
-        value={formData.email}
-        onChangeText={(value) => handleChange("email", value)}
-        editable={!loading}
-        placeholderTextColor="#999"
-        keyboardType="email-address"
-      />
-      {errors.email && <Text style={styles.error}>{errors.email}</Text>}
-
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={[styles.input, errors.password && styles.inputError]}
-        placeholder="Create a password"
-        value={formData.password}
-        onChangeText={(value) => handleChange("password", value)}
-        secureTextEntry
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
-      {errors.password && <Text style={styles.error}>{errors.password}</Text>}
-
-      <Text style={styles.label}>Confirm Password</Text>
-      <TextInput
-        style={[styles.input, errors.confirmPassword && styles.inputError]}
-        placeholder="Confirm your password"
-        value={formData.confirmPassword}
-        onChangeText={(value) => handleChange("confirmPassword", value)}
-        secureTextEntry
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
-      {errors.confirmPassword && (
-        <Text style={styles.error}>{errors.confirmPassword}</Text>
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="person-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.username && styles.inputError]}
+          placeholder="Tên người dùng"
+          value={formData.username}
+          onChangeText={(value) => handleChange("username", value)}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+      </View>
+      {errors.username && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.username}</Text>
+        </View>
       )}
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="mail-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.email && styles.inputError]}
+          placeholder="Email của bạn"
+          value={formData.email}
+          onChangeText={(value) => handleChange("email", value)}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+      {errors.email && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.email}</Text>
+        </View>
+      )}
+
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.password && styles.inputError]}
+          placeholder="Mật khẩu"
+          value={formData.password}
+          onChangeText={(value) => handleChange("password", value)}
+          secureTextEntry={!showPassword}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Ionicons
+            name={showPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="#64748B"
+          />
+        </TouchableOpacity>
+      </View>
+      {errors.password && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.password}</Text>
+        </View>
+      )}
+
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, errors.confirmPassword && styles.inputError]}
+          placeholder="Xác nhận mật khẩu"
+          value={formData.confirmPassword}
+          onChangeText={(value) => handleChange("confirmPassword", value)}
+          secureTextEntry={!showConfirmPassword}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+        >
+          <Ionicons
+            name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="#64748B"
+          />
+        </TouchableOpacity>
+      </View>
+      {errors.confirmPassword && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{errors.confirmPassword}</Text>
+        </View>
+      )}
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -217,7 +323,10 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Create Account</Text>
+          <>
+            <Text style={styles.buttonText}>Tạo tài khoản</Text>
+            <Ionicons name="arrow-forward" size={20} color="#fff" />
+          </>
         )}
       </TouchableOpacity>
     </View>
@@ -261,25 +370,39 @@ export const ForgotPasswordForm = ({ onSubmit, loading, error }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
+      <Text style={styles.title}>Quên mật khẩu?</Text>
       <Text style={styles.description}>
-        Enter your email address and we&apos;ll send you an OTP to reset your
-        password.
+        Nhập email của bạn và chúng tôi sẽ gửi mã OTP để đặt lại mật khẩu.
       </Text>
 
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={[styles.input, emailError && styles.inputError]}
-        placeholder="Enter your email"
-        value={email}
-        onChangeText={handleEmailChange}
-        editable={!loading}
-        placeholderTextColor="#999"
-        keyboardType="email-address"
-      />
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="mail-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={[styles.input, emailError && styles.inputError]}
+          placeholder="Email của bạn"
+          value={email}
+          onChangeText={handleEmailChange}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
 
-      {emailError && <Text style={styles.error}>{emailError}</Text>}
-      {error && <Text style={styles.error}>{error}</Text>}
+      {emailError && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{emailError}</Text>
+        </View>
+      )}
+      {error && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -289,7 +412,10 @@ export const ForgotPasswordForm = ({ onSubmit, loading, error }) => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Send OTP</Text>
+          <>
+            <Text style={styles.buttonText}>Gửi mã OTP</Text>
+            <Ionicons name="send" size={18} color="#fff" />
+          </>
         )}
       </TouchableOpacity>
     </View>
@@ -300,6 +426,8 @@ export const OTPVerificationForm = ({ onSubmit, loading, error, email }) => {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = () => {
     if (!otp.trim() || !newPassword.trim()) {
@@ -313,46 +441,85 @@ export const OTPVerificationForm = ({ onSubmit, loading, error, email }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Verify OTP</Text>
+      <Text style={styles.title}>Xác thực OTP</Text>
       <Text style={styles.description}>
-        We sent an OTP to {email}. Enter it below along with your new password.
+        Chúng tôi đã gửi mã OTP đến {email}. Nhập mã và mật khẩu mới của bạn.
       </Text>
 
-      <Text style={styles.label}>OTP Code</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter 6-digit OTP"
-        value={otp}
-        onChangeText={setOtp}
-        keyboardType="number-pad"
-        maxLength={6}
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="keypad-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Nhập mã OTP (6 số)"
+          value={otp}
+          onChangeText={setOtp}
+          keyboardType="number-pad"
+          maxLength={6}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+        />
+      </View>
 
-      <Text style={styles.label}>New Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter new password"
-        value={newPassword}
-        onChangeText={setNewPassword}
-        secureTextEntry
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Mật khẩu mới"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry={!showNewPassword}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowNewPassword(!showNewPassword)}
+        >
+          <Ionicons
+            name={showNewPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="#64748B"
+          />
+        </TouchableOpacity>
+      </View>
 
-      <Text style={styles.label}>Confirm Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm new password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        editable={!loading}
-        placeholderTextColor="#999"
-      />
+      <View style={styles.inputContainer}>
+        <View style={styles.inputIconWrapper}>
+          <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Xác nhận mật khẩu mới"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry={!showConfirmPassword}
+          editable={!loading}
+          placeholderTextColor="#94A3B8"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+        >
+          <Ionicons
+            name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
+            size={20}
+            color="#64748B"
+          />
+        </TouchableOpacity>
+      </View>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -362,7 +529,10 @@ export const OTPVerificationForm = ({ onSubmit, loading, error, email }) => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Reset Password</Text>
+          <>
+            <Text style={styles.buttonText}>Đặt lại mật khẩu</Text>
+            <Ionicons name="checkmark-circle" size={20} color="#fff" />
+          </>
         )}
       </TouchableOpacity>
     </View>
@@ -371,47 +541,75 @@ export const OTPVerificationForm = ({ onSubmit, loading, error, email }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
+    fontSize: 28,
+    fontWeight: "800",
+    marginBottom: 12,
+    color: "#1E293B",
   },
   description: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 20,
-    lineHeight: 20,
+    fontSize: 15,
+    color: "#64748B",
+    marginBottom: 28,
+    lineHeight: 22,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputIconWrapper: {
+    marginRight: 12,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 14,
-    marginBottom: 15,
-    backgroundColor: "#f9f9f9",
+    flex: 1,
+    fontSize: 15,
+    color: "#1E293B",
+    fontWeight: "500",
   },
   inputError: {
-    borderColor: "#e74c3c",
-    backgroundColor: "#ffe6e6",
+    borderColor: "#EF4444",
+    backgroundColor: "#FEF2F2",
+  },
+  eyeIcon: {
+    padding: 4,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: -8,
+    paddingHorizontal: 4,
+  },
+  error: {
+    color: "#EF4444",
+    fontSize: 13,
+    marginLeft: 6,
+    fontWeight: "500",
   },
   button: {
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: "#334155",
+    borderRadius: 16,
+    paddingVertical: 16,
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
+    marginTop: 8,
+    flexDirection: "row",
+    gap: 8,
+    shadowColor: "#334155",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -419,11 +617,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
-  },
-  error: {
-    color: "#e74c3c",
-    fontSize: 12,
-    marginBottom: 10,
+    fontWeight: "700",
   },
 });
+

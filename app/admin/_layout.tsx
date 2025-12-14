@@ -2,8 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-// Màu chủ đạo cho Admin (khác với User để phân biệt)
-const ACTIVE_COLOR = '#FF6B35'; // Cam đậm cho admin
+const ACTIVE_COLOR = '#334155';
 const INACTIVE_COLOR = '#8E8E93';
 
 export default function AdminLayout() {
@@ -58,15 +57,15 @@ export default function AdminLayout() {
         }}
       />
 
-      {/* 3. THÔNG BÁO */}
+      {/* 3. QUẢN LÝ MƯỢN TRẢ */}
       <Tabs.Screen
-        name="notifications/index"
+        name="borrowing/index"
         options={{
-          title: 'Thông báo',
+          title: 'Mượn trả',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "notifications" : "notifications-outline"}
-              size={26}
+            <MaterialCommunityIcons
+              name={focused ? "swap-horizontal-circle" : "swap-horizontal-circle-outline"}
+              size={28}
               color={color}
             />
           ),
@@ -121,6 +120,15 @@ export default function AdminLayout() {
       {/* Ẩn các màn hình không cần hiển thị trong tab */}
       <Tabs.Screen
         name="index"
+        options={{
+          href: null,
+          headerShown: false
+        }}
+      />
+
+      {/* Ẩn trang thông báo - đã có chuông thông báo ở header */}
+      <Tabs.Screen
+        name="notifications/index"
         options={{
           href: null,
           headerShown: false
