@@ -35,8 +35,9 @@ export const useStatistics = () => {
                 setDeviceStats(deviceRes.data.total);
             }
 
-            if (requestRes?.data?.data) {
-                setRequestStats(requestRes.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (requestRes?.data) {
+                setRequestStats(requestRes.data.data || requestRes.data);
             }
 
             try {
@@ -45,8 +46,9 @@ export const useStatistics = () => {
                     year: currentYear,
                     limit: 5
                 });
-                if (borrowedRes?.data?.data) {
-                    setMostBorrowed(borrowedRes.data.data);
+                // Response interceptor đã unwrap data rồi
+                if (borrowedRes?.data) {
+                    setMostBorrowed(borrowedRes.data.data || borrowedRes.data);
                 }
             } catch (err) {
                 console.log('Most borrowed API not available:', err.message);

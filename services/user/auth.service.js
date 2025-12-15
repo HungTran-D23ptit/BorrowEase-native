@@ -2,14 +2,14 @@ import { setAuthToken } from "../../utils/localStorage.js";
 import { apiAxios } from "../rootApi";
 
 export const userLogin = async (credentials) => {
-  console.log("[userLogin] credentials:", credentials);
   const response = await apiAxios({
     method: "post",
     url: "/user/auth/login",
     data: credentials,
   });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthToken(token);
   }
   return response;
 };
@@ -20,8 +20,9 @@ export const userRegister = async (data) => {
     url: "/user/auth/register",
     data: data,
   });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthToken(token);
   }
   return response;
 };
@@ -32,8 +33,9 @@ export const userLoginWithGoogle = async (data) => {
     url: "/user/auth/login/google",
     data: data,
   });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthToken(token);
   }
   return response;
 };
@@ -60,8 +62,26 @@ export const userResetPassword = async (email, otp, newPassword) => {
     url: "/user/auth/reset-password",
     data: { email, otp, newPassword },
   });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthToken(token);
   }
+  return response;
+};
+
+export const userLogout = async () => {
+  const response = await apiAxios({
+    method: "post",
+    url: "/user/auth/logout",
+  });
+  return response;
+};
+
+export const userChangePassword = async (oldPassword, newPassword) => {
+  const response = await apiAxios({
+    method: "put",
+    url: "/user/auth/change-password",
+    data: { oldPassword, newPassword },
+  });
   return response;
 };

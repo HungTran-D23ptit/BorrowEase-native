@@ -27,11 +27,13 @@ export const useNotifications = () => {
                 per_page: 10,
             });
 
-            if (response && response.data && response.data.data) {
-                const notifData = response.data.data.notifications || [];
-                const total = response.data.data.total || 0;
-                const currentPage = response.data.data.page || page;
-                const perPage = response.data.data.per_page || 10;
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data) {
+                const apiData = response.data.data || response.data;
+                const notifData = apiData.notifications || [];
+                const total = apiData.total || 0;
+                const currentPage = apiData.page || page;
+                const perPage = apiData.per_page || 10;
 
                 if (isRefresh || page === 1) {
                     setNotifications(notifData);
@@ -88,8 +90,10 @@ export const useUnreadCount = () => {
         setLoading(true);
         try {
             const response = await notificationService.getUnreadCount();
-            if (response && response.data && response.data.data !== undefined) {
-                setCount(response.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data !== undefined) {
+                const count = response.data.data !== undefined ? response.data.data : response.data;
+                setCount(count);
             }
         } catch (err) {
             console.error('Error fetching unread count:', err);

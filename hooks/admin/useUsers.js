@@ -92,8 +92,9 @@ export const useUserDetail = (userId) => {
 
         try {
             const response = await userService.getUserById(userId);
-            if (response && response.data && response.data.data) {
-                setUser(response.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data) {
+                setUser(response.data.data || response.data);
             }
         } catch (err) {
             const message = handleApiError(err, 'Không thể tải thông tin người dùng', false);
@@ -127,8 +128,9 @@ export const useUserStatistics = () => {
         setError(null);
         try {
             const response = await userService.getUserStatistics();
-            if (response && response.data && response.data.data) {
-                setStats(response.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data) {
+                setStats(response.data.data || response.data);
             }
         } catch (err) {
             const message = handleApiError(err, 'Không thể tải thống kê', false);

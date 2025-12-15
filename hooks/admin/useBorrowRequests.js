@@ -34,8 +34,9 @@ export const useBorrowRequests = (initialStatus = '') => {
             });
 
             // API trả về: { status, success, message, data: { total, page, per_page, requests } }
-            if (response && response.data && response.data.data) {
-                const apiData = response.data.data; // Unwrap nested data
+            // Response interceptor đã unwrap data rồi nên response.data chính là data object
+            if (response && response.data) {
+                const apiData = response.data.data || response.data; // Fallback for both cases
                 const requestsList = apiData.requests || [];
 
                 if (isRefresh || page === 1) {
@@ -107,8 +108,9 @@ export const useBorrowRequestStats = () => {
         try {
             const response = await borrowRequestService.getBorrowRequestStats();
             // API trả về: { status, success, message, data: { PENDING: 12, APPROVED: 25, ... } }
-            if (response && response.data && response.data.data) {
-                setStats(response.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data) {
+                setStats(response.data.data || response.data);
             }
         } catch (err) {
             const message = handleApiError(err, 'Không thể tải thống kê', false);
@@ -145,8 +147,9 @@ export const useBorrowRequestDetail = (requestId) => {
         try {
             const response = await borrowRequestService.getBorrowRequestById(requestId);
             // API trả về: { status, success, message, data: { _id, user, device, ... } }
-            if (response && response.data && response.data.data) {
-                setRequest(response.data.data);
+            // Response interceptor đã unwrap data rồi
+            if (response && response.data) {
+                setRequest(response.data.data || response.data);
             }
         } catch (err) {
             const message = handleApiError(err, 'Không thể tải chi tiết đơn mượn', false);

@@ -146,7 +146,7 @@ export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
 
 export const RegisterForm = ({ onRegister, loading, error }) => {
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -171,11 +171,11 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
   };
 
   const handleRegister = () => {
-    const { username, email, password, confirmPassword } = formData;
+    const { name, email, password, confirmPassword } = formData;
     const newErrors = {};
 
-    if (!username.trim()) {
-      newErrors.username = "Username không được bỏ trống";
+    if (!name.trim()) {
+      newErrors.name = "Tên không được bỏ trống";
     }
     if (!email.trim()) {
       newErrors.email = "Email không được bỏ trống";
@@ -206,19 +206,19 @@ export const RegisterForm = ({ onRegister, loading, error }) => {
           <Ionicons name="person-outline" size={20} color="#64748B" />
         </View>
         <TextInput
-          style={[styles.input, errors.username && styles.inputError]}
+          style={[styles.input, errors.name && styles.inputError]}
           placeholder="Tên người dùng"
-          value={formData.username}
-          onChangeText={(value) => handleChange("username", value)}
+          value={formData.name}
+          onChangeText={(value) => handleChange("name", value)}
           editable={!loading}
           placeholderTextColor="#94A3B8"
-          autoCapitalize="none"
+          autoCapitalize="words"
         />
       </View>
-      {errors.username && (
+      {errors.name && (
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle" size={14} color="#EF4444" />
-          <Text style={styles.error}>{errors.username}</Text>
+          <Text style={styles.error}>{errors.name}</Text>
         </View>
       )}
 

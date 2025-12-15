@@ -7,8 +7,9 @@ export const adminLogin = async (credentials) => {
     url: "/admin/auth/login",
     data: credentials,
   });
-  if (response.data?.data?.access_token) {
-    await setAuthTokenAdmin(response.data.data.access_token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthTokenAdmin(token);
   }
   return response;
 };
@@ -35,8 +36,9 @@ export const adminResetPassword = async (email, otp, newPassword) => {
     url: "/admin/auth/reset-password",
     data: { email, otp, newPassword },
   });
-  if (response.data?.data?.access_token) {
-    await setAuthTokenAdmin(response.data.data.access_token);
+  const token = response.data?.access_token || response.data?.data?.access_token;
+  if (token) {
+    await setAuthTokenAdmin(token);
   }
   return response;
 };

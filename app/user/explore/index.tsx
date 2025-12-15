@@ -1,36 +1,95 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { useDevices } from '@/hooks/user/useDevices';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DeviceCard from '../../../components/DeviceCard';
 
 // 👇 Import styles từ file bên cạnh
 import { styles } from './style';
 
-// --- DỮ LIỆU GIẢ (MOCK DATA) ---
-const BASE_DEVICES = [
-    { id: 'D1', name: 'Camon EOS R5', description: 'Thiết bị điện thông minh giải pháp tự động...', quantity: 7, imageUrl: 'https://via.placeholder.com/150x150?text=Camera1' },
-    { id: 'D2', name: 'Sony Alpha A7', description: 'Máy ảnh không gương lật full-frame...', quantity: 3, imageUrl: 'https://via.placeholder.com/150x150?text=Camera2' },
-    { id: 'D3', name: 'Rode NT-USB', description: 'Microphone condenser USB đa năng...', quantity: 5, imageUrl: 'https://via.placeholder.com/150x150?text=Mic1' },
-    { id: 'D4', name: 'DJI RS 3 Pro', description: 'Gimbal chống rung 3 trục...', quantity: 2, imageUrl: 'https://via.placeholder.com/150x150?text=Gimbal' },
-];
-// Nhân bản dữ liệu để danh sách dài ra
-const MOCK_ALL_DEVICES = [...BASE_DEVICES, ...BASE_DEVICES.map(d => ({...d, id: d.id + '_2'})), ...BASE_DEVICES.map(d => ({...d, id: d.id + '_3'}))];
+interface Device {
+    _id: string;
+    name: string;
+    description?: string;
+    image_url?: string;
+    status: 'available' | 'borrowed' | 'maintenance' | 'unavailable';
+    category?: string;
+    quantity?: number;
+    available_quantity?: number;
+}
 
-const CATEGORIES = ['Tất cả', 'Camera Recorder', 'Camera', 'Microphone', 'Lighting', 'Phụ kiện'];
+const CATEGORIES = ['Tất cả', 'Camera Recorder', 'Camera', 'Microphone', 'LED Studio Light', 'Computer', 'Projector', 'Other'];
 
 export default function ExploreScreen() {
     const [searchText, setSearchText] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Tất cả');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Use the devices hook
+    const { devices, loading, error, refresh, updateParams } = useDevices({
+        page: 1,
+        per_page: 20,
+    });
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchText);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchText]);
+
+    // Update API params when search changes (not category, we filter on FE)
+    useEffect(() => {
+        const params: any = {
+            page: 1,
+            per_page: 100, // Get more items to filter on FE
+        };
+
+        if (debouncedSearch) {
+            params.search = debouncedSearch;
+        }
+
+        updateParams(params);
+    }, [debouncedSearch]);
+
+    // Filter devices by category on frontend
+    const filteredDevices = React.useMemo(() => {
+        if (!devices) return [];
+
+        if (selectedCategory === 'Tất cả') {
+            return devices;
+        }
+
+        return devices.filter((device: any) => device.type === selectedCategory);
+    }, [devices, selectedCategory]);
 
     return (
         <View style={styles.safeArea}>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-                
-                {/* 1. HEADER TITLE */}
-                <View style={styles.headerContainer}>
+            <ScrollView
+                style={styles.container}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={refresh}
+                        colors={['#334155']}
+                    />
+                }
+            >
+
+                {/* 1. GRADIENT HEADER */}
+                <LinearGradient
+                    colors={['#334155', '#475569']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.headerGradient}
+                >
                     <Text style={styles.headerTitle}>Thiết bị sẵn có</Text>
                     <Text style={styles.headerSubtitle}>Xem và lựa chọn các thiết bị bạn muốn mượn</Text>
-                </View>
+                </LinearGradient>
 
                 {/* 2. THANH TÌM KIẾM */}
                 <View style={styles.searchContainer}>
@@ -42,6 +101,11 @@ export default function ExploreScreen() {
                         value={searchText}
                         onChangeText={setSearchText}
                     />
+                    {searchText.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchText('')}>
+                            <Ionicons name="close-circle" size={20} color="#888" />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* 3. BỘ LỌC DANH MỤC */}
@@ -74,12 +138,47 @@ export default function ExploreScreen() {
                 </View>
 
                 {/* 4. LƯỚI THIẾT BỊ */}
-                <View style={styles.gridContainer}>
-                    {MOCK_ALL_DEVICES.map((device) => (
-                        <DeviceCard key={device.id} device={device} />
-                    ))}
-                </View>
-                 
+                {error ? (
+                    <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                        <MaterialCommunityIcons name="alert-circle-outline" size={64} color="#EF4444" />
+                        <Text style={{ fontSize: 16, color: '#6B7280', marginTop: 12 }}>
+                            {error}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={refresh}
+                            style={{
+                                marginTop: 16,
+                                paddingHorizontal: 24,
+                                paddingVertical: 12,
+                                backgroundColor: '#334155',
+                                borderRadius: 8,
+                            }}
+                        >
+                            <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Thử lại</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : loading && filteredDevices.length === 0 ? (
+                    <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                        <ActivityIndicator size="large" color="#334155" />
+                        <Text style={{ fontSize: 14, color: '#6B7280', marginTop: 12 }}>
+                            Đang tải thiết bị...
+                        </Text>
+                    </View>
+                ) : filteredDevices.length === 0 ? (
+                    <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                        <MaterialCommunityIcons name="inbox-outline" size={64} color="#D1D5DB" />
+                        <Text style={{ fontSize: 16, color: '#6B7280', marginTop: 12 }}>
+                            Không tìm thấy thiết bị nào
+                        </Text>
+                    </View>
+                ) : (
+                    <View style={styles.gridContainer}>
+                        {(filteredDevices as Device[]).map((device) => (
+                            <DeviceCard key={device._id} device={device} />
+                        ))}
+                    </View>
+                )}
+
                 <View style={{ height: 20 }} />
             </ScrollView>
         </View>

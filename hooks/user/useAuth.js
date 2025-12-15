@@ -13,10 +13,6 @@ export const useUserLogin = () => {
     setError(null);
     setSuccess(false);
     try {
-      console.log("[useUserLogin] Calling userLogin with:", {
-        email,
-        password,
-      });
       const response = await userAuthService.userLogin({ email, password });
       setSuccess(true);
       return response;

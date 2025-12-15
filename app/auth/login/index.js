@@ -21,6 +21,7 @@ import {
   useUserLogin,
   useUserRegister,
 } from "../../../hooks/user/useAuth";
+import { parseApiError } from "../../../utils/errorHandler";
 import { styles } from "./styles";
 
 export default function LoginScreen() {
@@ -39,19 +40,25 @@ export default function LoginScreen() {
 
   const handleLogin = async (email, password) => {
     try {
-      console.log("[LoginScreen] handleLogin called with:", {
-        email,
-        password,
-      });
       const response = await currentLoginHook.login(email, password);
-      if (response && response.data?.data?.access_token) {
-        console.log("Login successful:", response);
+
+      // Check if login was successful
+      // API returns: { data: { access_token, expire_in, auth_type } }
+      const token = response?.data?.access_token || response?.data?.data?.access_token;
+
+      if (response && token) {
         showSuccess("Đăng nhập thành công!");
-        if (activeTab === "user") {
-          router.replace("/user");
-        } else {
-          router.replace("/admin");
-        }
+
+        // Use setTimeout to ensure toast shows before navigation
+        setTimeout(() => {
+          if (activeTab === "user") {
+            router.replace("/user");
+          } else {
+            router.replace("/admin");
+          }
+        }, 100);
+      } else {
+        showError("Đăng nhập thất bại: Không nhận được token");
       }
     } catch (error) {
       const errorMessage = parseApiError(error, "Đăng nhập thất bại");

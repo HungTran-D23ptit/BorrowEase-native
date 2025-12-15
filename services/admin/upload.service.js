@@ -1,14 +1,8 @@
 import { apiAdminAxios } from "../rootApi";
 
-/**
- * Upload ảnh lên server
- * @param {Object} file - File object với uri, name, type
- * @returns {Promise} Response chứa URL của ảnh đã upload
- */
 export const uploadImage = async (file) => {
     const formData = new FormData();
 
-    // Tạo file object cho FormData
     formData.append('image', {
         uri: file.uri,
         name: file.name || 'device-image.jpg',
@@ -27,11 +21,6 @@ export const uploadImage = async (file) => {
     return response;
 };
 
-/**
- * Upload nhiều ảnh cùng lúc
- * @param {Array} files - Mảng các file objects
- * @returns {Promise} Response chứa mảng URLs của các ảnh đã upload
- */
 export const uploadMultipleImages = async (files) => {
     const formData = new FormData();
 
