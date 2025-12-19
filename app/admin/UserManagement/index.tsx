@@ -1,13 +1,10 @@
-import { useToast } from '@/contexts/ToastContext';
-import { useUserActions, useUsers, useUserStats } from '@/hooks/admin/useUsers';
-import { getImageUrl } from '@/services/rootApi';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
     Image,
+    KeyboardAvoidingView,
     Modal,
     RefreshControl,
     Text,
@@ -17,19 +14,40 @@ import {
 } from 'react-native';
 import { s } from './styles';
 
+type Role = 'Edit' | 'View';
+
+type User = {
+    id: string;
+    name: string;
+    code: string;
+    phone: string;
+    email: string;
+    address: string;
+    password: string;
+    status: 'Đang hoạt động' | 'Ngưng hoạt động';
+    accountStatus: 'Mở tài khoản' | 'Khóa tài khoản';
+    role: Role;
+    avatar?: string | null;
+};
+
+const SAMPLE_USERS: User[] = Array.from({ length: 8 }).map((_, i) => ({
+    id: String(i + 1),
+    name: 'Hoahoang',
+    code: 'B23DCCC069',
+    phone: '032320291',
+    email: 'abc@gmail.com',
+    address: 'acb Hà Nội',
+    password: 'âsdfgsggrrwr',
+    status: i % 2 === 0 ? 'Đang hoạt động' : 'Ngưng hoạt động',
+    accountStatus: i % 3 === 0 ? 'Khóa tài khoản' : 'Mở tài khoản',
+    role: i % 2 === 0 ? 'Edit' : 'View',
+    avatar: null,
+}));
+
 export default function UserManagement() {
     const [search, setSearch] = useState('');
-    const [expandedId, setExpandedId] = useState<string | null>(null);
-    const [confirmModal, setConfirmModal] = useState<{
-        visible: boolean;
-        user: any;
-        action: string;
-    }>({ visible: false, user: null, action: '' });
-    const { showSuccess, showError, showWarning } = useToast();
-
-    const { users, loading, refreshing, refresh, loadMore } = useUsers();
-    const { stats } = useUserStats();
-    const { deleteUser, activateUser, loading: actionLoading } = useUserActions();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
 
     function onToggleExpand(id: string) {
         setExpandedId(prev => (prev === id ? null : id));
@@ -64,9 +82,18 @@ export default function UserManagement() {
         }
     }
 
-    const filtered = users.filter(u =>
-        `${u.name} ${u.email} ${u.phone}`.toLowerCase().includes(search.toLowerCase()),
-    );
+    // ⭐ Lọc theo search + theo tab + theo role
+    const filtered = users.filter(u => {
+        const matchSearch =
+            `${u.name} ${u.code} ${u.email}`.toLowerCase().includes(search.toLowerCase());
+
+        if (!matchSearch) return false;
+
+        if (tab === 'user') return u.role === 'View';
+        if (tab === 'admin') return u.role === 'Edit';
+
+        return true;
+    });
 
     const activePercent = stats ? Math.round((stats.active / stats.total) * 100) : 0;
 
@@ -112,190 +139,216 @@ export default function UserManagement() {
                 </View>
             </View>
 
-            {/* SEARCH */}
-            <View style={s.searchSection}>
-                <View style={s.searchRow}>
-                    <Ionicons name="search" size={20} color="#9CA3AF" style={{ marginRight: 12 }} />
-                    <TextInput
-                        placeholder="Tìm kiếm theo tên, email, SĐT..."
-                        placeholderTextColor="#9CA3AF"
-                        value={search}
-                        onChangeText={setSearch}
-                        style={s.searchInput}
-                    />
-                    {search.length > 0 && (
-                        <TouchableOpacity onPress={() => setSearch('')}>
-                            <Ionicons name="close-circle" size={20} color="#9CA3AF" />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </View>
+            <FlatList
+                data={filtered}
+                keyExtractor={i => i.id}
+                contentContainerStyle={{ paddingBottom: 120 }}
+                renderItem={({ item }) => (
+                    <View style={s.card}>
+                        <View style={s.cardHeader}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Image
+                                    source={
+                                        item.avatar
+                                            ? { uri: item.avatar }
+                                            : require('./default-avatar.png')
+                                    }
+                                    style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
+                                />
+                                <View>
+                                    <Text style={s.name}>{item.name}</Text>
+                                    <Text style={s.code}>{item.code}</Text>
+                                </View>
+                            </View>
 
-            {/* USER LIST */}
-            {loading && users.length === 0 ? (
-                <View style={s.loadingContainer}>
-                    <ActivityIndicator size="large" color="#34C759" />
-                    <Text style={s.loadingText}>Đang tải người dùng...</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={filtered}
-                    keyExtractor={item => item._id}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={['#334155']} />
-                    }
-                    onEndReached={loadMore}
-                    onEndReachedThreshold={0.5}
-                    contentContainerStyle={s.listContent}
-                    renderItem={({ item }) => {
-                        const isExpanded = expandedId === item._id;
-                        const isLocked = item.status === 'DE_ACTIVE';
-
-                        return (
-                            <View style={s.userCard}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <TouchableOpacity style={s.actionBtn} onPress={() => onEdit(item)}>
+                                    <Text style={s.actionText}>Sửa</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={s.cardHeader}
-                                    onPress={() => onToggleExpand(item._id)}
-                                    activeOpacity={0.7}
-                                >
-                                    <View style={s.userInfo}>
-                                        {(item.avatar_url || item.avatar || item.image_url) ? (
-                                            <Image
-                                                source={{ uri: getImageUrl(item.avatar_url || item.avatar || item.image_url) }}
-                                                style={s.avatar}
-                                            />
-                                        ) : (
-                                            <View style={s.avatarPlaceholder}>
-                                                <MaterialCommunityIcons name="account" size={28} color="#9CA3AF" />
-                                            </View>
-                                        )}
-                                        <View style={s.userTextContainer}>
-                                            <Text style={s.userName} numberOfLines={1}>
-                                                {item.name}
-                                            </Text>
-                                            <Text style={s.userEmail} numberOfLines={1}>
-                                                {item.email}
-                                            </Text>
-                                        </View>
-                                    </View>
-
-                                    <View style={s.cardActions}>
-                                        {isLocked ? (
-                                            <View style={s.statusBadgeLocked}>
-                                                <MaterialCommunityIcons name="lock" size={14} color="#FF3B30" />
-                                                <Text style={s.statusTextLocked}>Đã khóa</Text>
-                                            </View>
-                                        ) : (
-                                            <View style={s.statusBadgeActive}>
-                                                <MaterialCommunityIcons name="check-circle" size={14} color="#34C759" />
-                                                <Text style={s.statusTextActive}>Hoạt động</Text>
-                                            </View>
-                                        )}
-                                        <Ionicons
-                                            name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                                            size={20}
-                                            color="#9CA3AF"
-                                            style={{ marginLeft: 8 }}
-                                        />
-                                    </View>
+                                    style={[s.actionBtn, { marginLeft: 8 }]}
+                                    onPress={() => onDelete(item)}>
+                                    <Text style={[s.actionText, { color: '#DC2626' }]}>Xóa</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={s.caretBtn}
+                                    onPress={() => onToggleExpand(item.id)}>
+                                    <Text style={s.caretText}>
+                                        {expandedId === item.id ? '▲' : '▼'}
+                                    </Text>
                                 </TouchableOpacity>
 
-                                {isExpanded && (
-                                    <View style={s.expandedContent}>
-                                        <View style={s.detailRow}>
-                                            <MaterialCommunityIcons name="phone" size={16} color="#6B7280" />
-                                            <Text style={s.detailLabel}>Số điện thoại:</Text>
-                                            <Text style={s.detailValue}>{item.phone || 'N/A'}</Text>
-                                        </View>
-
-                                        <View style={s.detailRow}>
-                                            <MaterialCommunityIcons name="map-marker" size={16} color="#6B7280" />
-                                            <Text style={s.detailLabel}>Địa chỉ:</Text>
-                                            <Text style={s.detailValue} numberOfLines={2}>
-                                                {item.address || 'N/A'}
-                                            </Text>
-                                        </View>
-
-                                        <View style={s.detailRow}>
-                                            <MaterialCommunityIcons name="shield-account" size={16} color="#6B7280" />
-                                            <Text style={s.detailLabel}>Vai trò:</Text>
-                                            <Text style={s.detailValue}>{item.role || 'USER'}</Text>
-                                        </View>
-
-                                        <TouchableOpacity
-                                            style={[s.lockButton, isLocked && s.unlockButton]}
-                                            onPress={() => onToggleLock(item)}
-                                            disabled={actionLoading}
-                                        >
-                                            {actionLoading ? (
-                                                <ActivityIndicator size="small" color="#FFF" />
-                                            ) : (
-                                                <>
-                                                    <Ionicons
-                                                        name={isLocked ? 'lock-open' : 'lock-closed'}
-                                                        size={18}
-                                                        color="#FFF"
-                                                    />
-                                                    <Text style={s.lockButtonText}>
-                                                        {isLocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}
-                                                    </Text>
-                                                </>
-                                            )}
-                                        </TouchableOpacity>
-                                    </View>
+                        {expandedId === item.id && (
+                            <View style={s.cardBody}>
+                                <Text style={s.label}>Số điện thoại: <Text style={s.value}>{item.phone}</Text></Text>
+                                <Text style={s.label}>Mã người dùng <Text style={s.value}>{item.phone}</Text></Text>
+                                <Text style={s.label}>Email: <Text style={s.value}>{item.email}</Text></Text>
+                                <Text style={s.label}>Địa chỉ: <Text style={s.value}>{item.address}</Text></Text>
+                                <Text style={s.label}>Mật khẩu: <Text style={s.value}>{item.password}</Text></Text>
+                                <Text style={s.label}>Trạng thái: <Text style={s.value}>{item.status}</Text></Text>
+                                <Text style={s.label}>Trạng thái tài khoản: <Text style={s.value}>{item.accountStatus}</Text></Text>
+                                {tab === 'admin' && (
+                                    <Text style={s.label}>Quyền: <Text style={s.value}>{item.role}</Text></Text>
                                 )}
                             </View>
-                        );
-                    }}
-                    ListEmptyComponent={
-                        <View style={s.emptyContainer}>
-                            <MaterialCommunityIcons name="account-search" size={80} color="#E0E0E0" />
-                            <Text style={s.emptyText}>Không tìm thấy người dùng</Text>
-                            <Text style={s.emptySubtext}>
-                                {search ? 'Thử tìm kiếm với từ khóa khác' : 'Chưa có người dùng nào'}
-                            </Text>
-                        </View>
-                    }
-                    ListFooterComponent={
-                        loading && users.length > 0 ? (
-                            <ActivityIndicator size="small" color="#34C759" style={{ marginVertical: 20 }} />
-                        ) : null
-                    }
-                />
-            )}
+                        )}
+                    </View>
+                )}
+            />
 
-            {/* CONFIRMATION MODAL */}
-            <Modal
-                visible={confirmModal.visible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={() => setConfirmModal({ visible: false, user: null, action: '' })}
+            <TouchableOpacity style={s.addBtn} onPress={onAdd}>
+                <Text style={s.addBtnText}>Thêm người dùng</Text>
+            </TouchableOpacity>
+
+            <UserFormModal
+                visible={modalVisible}
+                onClose={() => {
+                    setModalVisible(false);
+                    setEditingUser(null);
+                }}
+                onSave={onSave}
+                initialData={editingUser ?? undefined}
+            />
+        </SafeAreaView>
+    );
+}
+
+
+function UserFormModal({
+    visible,
+    onClose,
+    onSave,
+    initialData,
+}: {
+    visible: boolean;
+    onClose: () => void;
+    onSave: (u: User) => void;
+    initialData?: User;
+}) {
+    const [name, setName] = useState(initialData?.name ?? '');
+    const [code, setCode] = useState(initialData?.code ?? '');
+    const [email, setEmail] = useState(initialData?.email ?? '');
+    const [phone, setPhone] = useState(initialData?.phone ?? '');
+    const [address, setAddress] = useState(initialData?.address ?? '');
+    const [password, setPassword] = useState(initialData?.password ?? '');
+    const [status, setStatus] = useState<User['status']>(initialData?.status ?? 'Đang hoạt động');
+    const [accountStatus, setAccountStatus] = useState<User['accountStatus']>(initialData?.accountStatus ?? 'Mở tài khoản');
+    const [role, setRole] = useState<Role>(initialData?.role ?? 'View');
+    const [avatar, setAvatar] = useState<string | null>(initialData?.avatar ?? null);
+
+    React.useEffect(() => {
+        setName(initialData?.name ?? '');
+        setCode(initialData?.code ?? '');
+        setEmail(initialData?.email ?? '');
+        setPhone(initialData?.phone ?? '');
+        setAddress(initialData?.address ?? '');
+        setPassword(initialData?.password ?? '');
+        setStatus(initialData?.status ?? 'Đang hoạt động');
+        setAccountStatus(initialData?.accountStatus ?? 'Mở tài khoản');
+        setRole(initialData?.role ?? 'View');
+        setAvatar(initialData?.avatar ?? null);
+    }, [initialData, visible]);
+
+    async function pickImage() {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Lỗi', 'Ứng dụng cần quyền truy cập ảnh');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setAvatar(result.assets[0].uri);
+        }
+    }
+
+    function handleSave() {
+        if (!name.trim() || !email.trim()) {
+            Alert.alert('Lỗi', 'Vui lòng nhập ít nhất tên và email');
+            return;
+        }
+
+        const payload: User = {
+            id: initialData?.id ?? String(Math.floor(Math.random() * 1000000)),
+            name,
+            code: code || 'B23D...',
+            email,
+            phone,
+            address,
+            password,
+            status,
+            accountStatus,
+            role,
+            avatar,
+        };
+
+        onSave(payload);
+    }
+
+    return (
+        <Modal visible={visible} animationType="slide" transparent>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={s.modalContainer}
             >
-                <View style={s.modalOverlay}>
-                    <View style={s.modalContainer}>
-                        <View style={s.modalHeader}>
-                            <View
-                                style={[
-                                    s.modalIconCircle,
-                                    {
-                                        backgroundColor:
-                                            confirmModal.action === 'khóa' ? '#FFEBEE' : '#E8F5E9',
-                                    },
-                                ]}
-                            >
-                                <Ionicons
-                                    name={confirmModal.action === 'khóa' ? 'lock-closed' : 'lock-open'}
-                                    size={32}
-                                    color={confirmModal.action === 'khóa' ? '#FF3B30' : '#34C759'}
+                <View style={s.modalCard}>
+                    <Text style={s.modalTitle}>
+                        {initialData ? 'Chỉnh sửa thông tin cá nhân' : 'Thêm người dùng'}
+                    </Text>
+
+                    <ScrollView>
+                        {/* Avatar */}
+                        <TouchableOpacity style={s.avatarPlaceholder} onPress={pickImage}>
+                            {avatar ? (
+                                <Image
+                                    source={{ uri: avatar }}
+                                    style={{ width: 80, height: 80, borderRadius: 40 }}
                                 />
-                            </View>
-                            <Text style={s.modalTitle}>
-                                {confirmModal.action === 'khóa' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
-                            </Text>
-                            <Text style={s.modalMessage}>
-                                Bạn có chắc chắn muốn {confirmModal.action} tài khoản{' '}
-                                <Text style={s.modalUserName}>{confirmModal.user?.name}</Text>?
-                            </Text>
+                            ) : (
+                                <Text style={{ color: '#fff' }}>Thay đổi ảnh đại diện</Text>
+                            )}
+                        </TouchableOpacity>
+
+                        <Text style={s.fieldLabel}>Họ và tên</Text>
+                        <TextInput value={name} onChangeText={setName} style={s.input} />
+                        <Text style={s.fieldLabel}>Mã người dùng</Text>
+                        <TextInput value={code} onChangeText={setCode} style={s.input} />
+
+                        <Text style={s.fieldLabel}>Email</Text>
+                        <TextInput value={email} onChangeText={setEmail} style={s.input} keyboardType="email-address" />
+
+                        <Text style={s.fieldLabel}>Số điện thoại</Text>
+                        <TextInput value={phone} onChangeText={setPhone} style={s.input} keyboardType="phone-pad" />
+
+                        <Text style={s.fieldLabel}>Địa chỉ</Text>
+                        <TextInput value={address} onChangeText={setAddress} style={s.input} />
+
+                        <Text style={s.fieldLabel}>Mật khẩu</Text>
+                        <TextInput value={password} onChangeText={setPassword} style={s.input} secureTextEntry />
+
+                        <Text style={s.fieldLabel}>Trạng thái</Text>
+                        <View style={s.optionRow}>
+                            <TouchableOpacity onPress={() => setStatus('Đang hoạt động')} style={[s.optionBtn, status === 'Đang hoạt động' && s.optionActive]}>
+                                <Text style={status === 'Đang hoạt động' ? s.optionTextActive : s.optionText}>Đang hoạt động</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setStatus('Ngưng hoạt động')} style={[s.optionBtn, status === 'Ngưng hoạt động' && s.optionActive]}>
+                                <Text style={status === 'Ngưng hoạt động' ? s.optionTextActive : s.optionText}>Ngưng hoạt động</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <Text style={s.fieldLabel}>Trạng thái tài khoản</Text>
+                        <View style={s.optionRow}>
+                            <TouchableOpacity onPress={() => setAccountStatus('Mở tài khoản')} style={[s.optionBtn, accountStatus === 'Mở tài khoản' && s.optionActive]}>
+                                <Text style={accountStatus === 'Mở tài khoản' ? s.optionTextActive : s.optionText}>Mở tài khoản</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setAccountStatus('Khóa tài khoản')} style={[s.optionBtn, accountStatus === 'Khóa tài khoản' && s.optionActive]}>
+                                <Text style={accountStatus === 'Khóa tài khoản' ? s.optionTextActive : s.optionText}>Khóa tài khoản</Text>
+                            </TouchableOpacity>
                         </View>
 
                         <View style={s.modalActions}>

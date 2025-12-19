@@ -34,9 +34,22 @@ export const styles = StyleSheet.create({
     // Stats Row - Compact design like devices page
     statsRow: {
         flexDirection: 'row',
-        marginBottom: 20,
-        gap: 12,
-        paddingHorizontal: 16,
+        marginBottom: 16,
+        flexWrap: 'wrap',
+    },
+    cardLarge: {
+        flex: 2,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginRight: 8,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
     },
     statCard: {
         flex: 1,
@@ -57,7 +70,11 @@ export const styles = StyleSheet.create({
         backgroundColor: '#334155',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 8,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
     },
     statValue: {
         fontSize: 24,
@@ -133,7 +150,8 @@ export const styles = StyleSheet.create({
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 6,
+        width: '100%'
     },
     legendDot: {
         width: 12,
@@ -145,14 +163,14 @@ export const styles = StyleSheet.create({
         flex: 1,
         fontSize: 13,
         color: '#4B5563',
-        fontWeight: '500',
+        marginRight: 6,
+        flex: 1,
     },
     legendCount: {
         fontSize: 14,
         fontWeight: '700',
         color: '#1F2937',
-        minWidth: 30,
-        textAlign: 'right',
+        marginLeft: 8,
     },
     emptyChart: {
         alignItems: 'center',
@@ -179,10 +197,145 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(99, 102, 241, 0.08)',
     },
-    cardHeader: {
-        flexDirection: 'row',
+    chipActive: {
+        backgroundColor: '#3B82F6',
+        borderColor: '#3B82F6',
+    },
+    chipText: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    chipTextActive: {
+        color: '#FFFFFF',
+    },
+    chipSmall: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        backgroundColor: '#F3F4F6',
+        marginRight: 6,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        elevation: 1,
+    },
+    chipSmallActive: {
+        backgroundColor: '#10B981',
+        borderColor: '#10B981',
+    },
+    chipSmallText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    chipSmallTextActive: {
+        color: '#FFFFFF',
+    },
+    cardFull: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
+    },
+
+    listCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
+    },
+
+    /* Modal styles */
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.35)',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+    },
+    modalContainer: {
+        width: '92%',
+        maxHeight: '80%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        elevation: 4,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    modalTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#111827',
+    },
+    modalClose: {
+        color: '#6B7280',
+        fontWeight: '600',
+    },
+    modalFilters: {
+        marginBottom: 8,
+    },
+    modalTabs: {
+        flexDirection: 'row',
+        marginBottom: 8,
+    },
+    tabBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        marginRight: 8,
+    },
+    tabBtnActive: {
+        backgroundColor: '#3B82F6',
+    },
+    tabText: {
+        color: '#6B7280',
+        fontWeight: '600',
+    },
+    tabTextActive: {
+        color: '#FFFFFF',
+    },
+    modalList: {
+        flex: 1,
+        marginTop: 8,
+    },
+    modalRow: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        alignItems: 'center',
+    },
+    miniBar: {
+        width: '100%',
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+    },
+    progressTrack: {
+        height: 12,
+        backgroundColor: '#E5E7EB',
+        borderRadius: 999,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        backgroundColor: '#34D399',
     },
     cardHeaderTitle: {
         fontSize: 19,
@@ -220,9 +373,15 @@ export const styles = StyleSheet.create({
         marginRight: 12,
         backgroundColor: '#F9FAFB',
     },
-    deviceImage: {
-        width: 48,
-        height: 48,
+    metaText: {
+        fontSize: 12,
+        color: '#9CA3AF',
+    },
+    itemPercent: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#3B82F6',
+        marginBottom: 2,
     },
     deviceImagePlaceholder: {
         width: 48,
@@ -231,8 +390,63 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#F3F4F6',
     },
-    deviceInfo: {
-        flex: 1,
+    statusSummary: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    statusItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8FAFC',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        marginRight: 8,
+        marginBottom: 8,
+    },
+    deviceTypeCard: {
+        backgroundColor: '#FFFFFF',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 10,
+        marginRight: 8,
+        marginBottom: 8,
+        minWidth: 140,
+        elevation: 1,
+    },
+    deviceTypeCardActive: {
+        borderColor: '#3B82F6',
+        backgroundColor: '#EFF6FF',
+    },
+    deviceTypeCardTitle: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    deviceTypeCardMeta: {
+        fontSize: 12,
+        color: '#6B7280',
+    },
+    statusDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 3,
+    },
+    statusLabel: {
+        fontSize: 12,
+        color: '#374151',
+        fontWeight: '600',
+    },
+    statusCount: {
+        fontSize: 11,
+        color: '#6B7280',
+    },
+    recentRow: {
+        flexDirection: 'row',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
     },
     deviceName: {
         fontSize: 14,
