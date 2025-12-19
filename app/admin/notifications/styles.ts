@@ -1,104 +1,47 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F9FAFB',
-        paddingHorizontal: 16,
-    },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 20,
-        paddingBottom: 12,
-        paddingHorizontal: 4,
-    },
-    headerTitle: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: '#1F2937',
-    },
-    markAllBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 7,
-        borderRadius: 20,
-        backgroundColor: '#334155',
-        shadowColor: '#334155',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    markAllText: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#FFFFFF',
-    },
-    card: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
-    },
-    leftCol: {
-        marginRight: 12,
-    },
-    iconCircle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: '#FEF3C7',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    iconText: {
-        fontSize: 20,
-    },
-    middleCol: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 15,
-        fontWeight: '600',
-        color: '#111827',
-        marginBottom: 4,
-    },
-    message: {
-        fontSize: 13,
-        color: '#374151',
-        lineHeight: 18,
-    },
-    rightCol: {
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        paddingVertical: 2,
-    },
-    timeText: {
-        fontSize: 11,
-        color: '#9CA3AF',
-        marginBottom: 4,
-    },
-    unreadDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#EF4444',
-    },
-    empty: {
-        textAlign: 'center',
-        color: '#9CA3AF',
-        fontSize: 14,
-        marginTop: 40,
-    },
+  container: { flex: 1, backgroundColor: '#FFFFFF', padding: 16 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  headerTitle: { fontSize: 20, fontWeight: '700', color: '#0F172A' },
+  markAllBtn: { paddingHorizontal: 10, paddingVertical: 6 },
+  markAllText: { color: '#2563EB', fontWeight: '600' },
+
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+  },
+  cardRead: {
+    backgroundColor: '#F1F5F9', // gray background for read
+  },
+
+  leftCol: { width: 48, alignItems: 'center', justifyContent: 'center' },
+  iconCircle: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#FEF3F2', alignItems: 'center', justifyContent: 'center' },
+  iconText: { fontSize: 18 },
+
+  middleCol: { flex: 1, paddingHorizontal: 8 },
+  title: { fontSize: 14, fontWeight: '700', color: '#0F172A' },
+  titleRead: { color: '#6B7280' },
+  message: { marginTop: 4, fontSize: 13, color: '#475569' },
+  messageRead: { color: '#94A3B8' },
+
+  rightCol: { width: 70, alignItems: 'flex-end', justifyContent: 'space-between', height: 40 },
+  timeText: { fontSize: 12, color: '#64748B' },
+  timeTextRead: { color: '#94A3B8' },
+
+  unreadDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 10,
+    backgroundColor: '#0EA5E9', 
+    marginTop: 6,
+  },
+
+  empty: { textAlign: 'center', color: '#94A3B8', marginTop: 24 },
 });
