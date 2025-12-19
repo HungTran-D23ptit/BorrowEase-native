@@ -1,27 +1,25 @@
-import { Alert } from "react-native";
+// This file now exports functions that should be used with ToastContext
+// Import and use like this:
+// import { useToast } from '../contexts/ToastContext';
+// const { showError, showSuccess, showInfo } = useToast();
 
-export const handleApiError = (
-  error,
-  defaultMessage = "Đã có lỗi xảy ra!",
-  showAlert = true
-) => {
+export const parseApiError = (error, defaultMessage = "Đã có lỗi xảy ra!") => {
   let message = defaultMessage;
 
   console.error("[API Error]", error);
 
   try {
+    // Handle detail object errors
     if (
       error?.response?.data?.detail &&
       typeof error.response.data.detail === "object"
     ) {
       const detailMessages = Object.values(error.response.data.detail);
       message = detailMessages.join("\n");
-      if (showAlert) {
-        Alert.alert("Lỗi", message);
-      }
       return message;
     }
 
+    // Handle errors array
     if (
       error?.response?.data?.errors &&
       Array.isArray(error.response.data.errors)
@@ -32,17 +30,16 @@ export const handleApiError = (
         return JSON.stringify(err);
       });
       message = errorMessages.join("\n");
-      if (showAlert) {
-        Alert.alert("Lỗi", message);
-      }
       return message;
     }
 
+    // Handle message field
     if (error?.response?.data?.message) {
       message = error.response.data.message;
     } else if (error?.message) {
       message = error.message;
     } else if (error?.response?.status) {
+      // Status code messages
       const statusMessages = {
         400: "Dữ liệu không hợp lệ",
         401: "Bạn chưa đăng nhập hoặc token hết hạn",
@@ -56,17 +53,29 @@ export const handleApiError = (
       message = statusMessages[error.response.status] || defaultMessage;
     }
 
-    if (showAlert) {
-      Alert.alert("Lỗi", message);
-    }
     return message;
   } catch (parseError) {
-    console.error("[handleApiError] Parse error:", parseError);
-    if (showAlert) {
-      Alert.alert("Lỗi", defaultMessage);
-    }
+    console.error("[parseApiError] Parse error:", parseError);
     return defaultMessage;
   }
+};
+
+// Legacy support - these will be deprecated
+// Use ToastContext instead
+import { Alert } from "react-native";
+
+export const handleApiError = (
+  error,
+  defaultMessage = "Đã có lỗi xảy ra!",
+  showAlert = true
+) => {
+  const message = parseApiError(error, defaultMessage);
+
+  if (showAlert) {
+    Alert.alert("Lỗi", message);
+  }
+
+  return message;
 };
 
 export const showSuccessMessage = (message, title = "Thành công") => {

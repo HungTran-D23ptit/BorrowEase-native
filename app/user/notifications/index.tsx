@@ -1,112 +1,187 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React from 'react';
 import {
+    ActivityIndicator,
     FlatList,
+    RefreshControl,
     SafeAreaView,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useToast } from '../../../contexts/ToastContext';
+import { useNotificationActions, useNotifications } from '../../../hooks/user/useNotifications';
 import { styles } from './styles';
 
-type Notification = {
-    id: string;
+type NotificationType = 'APPROVED' | 'REMINDER' | 'OVERDUE' | 'REJECTED';
+
+interface Notification {
+    _id: string;
     title: string;
     message: string;
-    time: string;
-    read: boolean;
+    type: NotificationType;
+    is_read: boolean;
+    related_id?: string;
+    related_type?: string;
+    createdAt: string;
+}
+
+const getNotificationIcon = (type: NotificationType) => {
+    switch (type) {
+        case 'APPROVED':
+            return '✅';
+        case 'REMINDER':
+            return '⏰';
+        case 'OVERDUE':
+            return '⚠️';
+        case 'REJECTED':
+            return '❌';
+        default:
+            return '🔔';
+    }
 };
 
-const SAMPLE: Notification[] = [
-    {
-        id: '1',
-        title: 'Nhắc đến hạn',
-        message: 'Thiết bị [Tên thiết bị] sẽ đến hạn trả vào ngày [Ngày trả].',
-        time: '5 phút trước',
-        read: false,
-    },
-    {
-        id: '2',
-        title: 'Cảnh báo quá hạn',
-        message: 'Thiết bị [Tên thiết bị] đã đến hạn trả vào ngày [Ngày trả].',
-        time: '10 phút trước',
-        read: false,
-    },
-    {
-        id: '3',
-        title: 'Yêu cầu được duyệt',
-        message: 'Yêu cầu mượn thiết bị [Tên thiết bị] ([Số lượng] chiếc) đã được duyệt.',
-        time: '1 giờ trước',
-        read: true,
-    },
-    {
-        id: '4',
-        title: 'Yêu cầu bị từ chối',
-        message: 'Yêu cầu mượn thiết bị [Tên thiết bị] đã bị từ chối. Lý do: [Lý do].',
-        time: '2 giờ trước',
-        read: true,
-    },
-];
+const getTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'Vừa xong';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} phút trước`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} giờ trước`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} ngày trước`;
+    return date.toLocaleDateString('vi-VN');
+};
 
 export default function NotificationsScreen() {
-    const [items, setItems] = useState<Notification[]>(SAMPLE);
+    const router = useRouter();
+    const { notifications, loading, refreshing, refresh, loadMore } = useNotifications();
+    const { markAsRead, markAllAsRead } = useNotificationActions();
+    const { showSuccess, showError } = useToast();
 
-    const markRead = (id: string) => {
-        setItems(prev => prev.map(i => (i.id === id ? { ...i, read: true } : i)));
+    const handleNotificationPress = async (notification: Notification) => {
+        try {
+            if (notification.related_type === 'BORROW_REQUEST' && notification.related_id) {
+                router.push({
+                    pathname: '/user/management',
+                    params: { requestId: notification.related_id }
+                } as any);
+            }
+
+            if (!notification.is_read) {
+                markAsRead(notification._id).catch(err => {
+                    console.error('Error marking as read:', err);
+                });
+            }
+        } catch (error) {
+            console.error('Error handling notification press:', error);
+        }
     };
 
-    const toggleRead = (id: string) => {
-        setItems(prev => prev.map(i => (i.id === id ? { ...i, read: !i.read } : i)));
+    const handleMarkAllRead = async () => {
+        try {
+            const response = await markAllAsRead();
+            showSuccess(response.message || 'Đã đánh dấu tất cả là đã đọc');
+            refresh();
+        } catch (error: any) {
+            showError(error?.response?.data?.message || 'Không thể đánh dấu đã đọc');
+        }
     };
-
-    const markAllRead = () => setItems(prev => prev.map(i => ({ ...i, read: true })));
 
     const renderItem = ({ item }: { item: Notification }) => {
         return (
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => markRead(item.id)}
-                onLongPress={() => toggleRead(item.id)}
-                style={[styles.card, item.read && styles.cardRead]}
+                onPress={() => handleNotificationPress(item)}
+                style={[styles.card, item.is_read && styles.cardRead]}
             >
                 <View style={styles.leftCol}>
                     <View style={styles.iconCircle}>
-                        <Text style={styles.iconText}>🔔</Text>
+                        <Text style={styles.iconText}>{getNotificationIcon(item.type)}</Text>
                     </View>
                 </View>
 
                 <View style={styles.middleCol}>
-                    <Text style={[styles.title, item.read && styles.titleRead]} numberOfLines={1}>
+                    <Text style={[styles.title, item.is_read && styles.titleRead]} numberOfLines={1}>
                         {item.title}
                     </Text>
-                    <Text style={[styles.message, item.read && styles.messageRead]} numberOfLines={2}>
+                    <Text style={[styles.message, item.is_read && styles.messageRead]} numberOfLines={2}>
                         {item.message}
                     </Text>
                 </View>
 
                 <View style={styles.rightCol}>
-                    <Text style={[styles.timeText, item.read && styles.timeTextRead]}>{item.time}</Text>
-                    {!item.read && <View style={styles.unreadDot} />}
+                    <Text style={[styles.timeText, item.is_read && styles.timeTextRead]}>
+                        {getTimeAgo(item.createdAt)}
+                    </Text>
+                    {!item.is_read && <View style={styles.unreadDot} />}
                 </View>
             </TouchableOpacity>
         );
     };
 
+    const renderEmpty = () => {
+        if (loading) {
+            return (
+                <View style={styles.emptyContainer}>
+                    <ActivityIndicator size="large" color="#334155" />
+                    <Text style={styles.emptyText}>Đang tải...</Text>
+                </View>
+            );
+        }
+
+        return (
+            <View style={styles.emptyContainer}>
+                <Ionicons name="notifications-off-outline" size={64} color="#CCC" />
+                <Text style={styles.emptyText}>Không có thông báo</Text>
+            </View>
+        );
+    };
+
+    const renderFooter = () => {
+        if (!loading || notifications.length === 0) return null;
+        return (
+            <View style={{ padding: 20 }}>
+                <ActivityIndicator size="small" color="#334155" />
+            </View>
+        );
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.headerRow}>
-                <Text style={styles.headerTitle}>Thông báo</Text>
-                <TouchableOpacity onPress={markAllRead} style={styles.markAllBtn}>
-                    <Text style={styles.markAllText}>Đánh dấu đã đọc</Text>
-                </TouchableOpacity>
-            </View>
+            <LinearGradient
+                colors={['#334155', '#475569']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.headerGradient}
+            >
+                <View style={styles.headerRow}>
+                    <Text style={styles.headerTitle}>Thông báo</Text>
+                    <TouchableOpacity onPress={handleMarkAllRead} style={styles.markAllBtn}>
+                        <Text style={styles.markAllText}>Đánh dấu đã đọc</Text>
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
 
             <FlatList
-                data={items}
-                keyExtractor={i => i.id}
+                data={notifications}
+                keyExtractor={i => i._id}
                 renderItem={renderItem}
-                contentContainerStyle={{ paddingBottom: 40 }}
+                contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 16 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-                ListEmptyComponent={<Text style={styles.empty}>Không có thông báo.</Text>}
+                ListEmptyComponent={renderEmpty}
+                ListFooterComponent={renderFooter}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={refresh}
+                        colors={['#334155']}
+                    />
+                }
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.5}
             />
         </SafeAreaView>
     );

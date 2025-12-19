@@ -4,26 +4,34 @@ const APP_COLORS = {
     background: '#FFFFFF',
     textMain: '#111111',
     textSecondary: '#666666',
-    primary: '#FF6B35',
+    primary: '#334155',
     primaryLight: '#FFE5DC',
 };
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 60,
         backgroundColor: '#F8F9FA',
     },
 
     // Header
-    header: {
+    headerGradient: {
+        paddingTop: 60,
+        paddingBottom: 24,
         paddingHorizontal: 20,
-        marginBottom: 20,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
     },
     headerTitle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: APP_COLORS.textMain,
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#FFFFFF',
+        marginBottom: 6,
+    },
+    headerSubtitle: {
+        fontSize: 15,
+        color: '#FFFFFF',
+        opacity: 0.9,
     },
 
     // Profile Card

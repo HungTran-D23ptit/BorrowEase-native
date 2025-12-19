@@ -3,17 +3,36 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9FAFB',
-        paddingHorizontal: 16,
+        backgroundColor: '#F8F9FD',
     },
-    title: {
-        fontSize: 26,
-        fontWeight: '700',
-        color: '#1F2937',
-        marginTop: 16,
-        marginBottom: 16,
+    headerGradient: {
+        paddingTop: 60,
+        paddingBottom: 55,
+        paddingHorizontal: 24,
+        borderBottomLeftRadius: 35,
+        borderBottomRightRadius: 35,
+        shadowColor: '#5B21B6',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
+        marginBottom: 20,
     },
-    cardRow: {
+    headerTitle: {
+        fontSize: 32,
+        fontWeight: '800',
+        color: '#FFFFFF',
+        marginBottom: 10,
+        letterSpacing: 0.5,
+    },
+    headerSubtitle: {
+        fontSize: 15,
+        color: 'rgba(255, 255, 255, 0.95)',
+        fontWeight: '500',
+    },
+
+    // Stats Row - Compact design like devices page
+    statsRow: {
         flexDirection: 'row',
         marginBottom: 16,
         flexWrap: 'wrap',
@@ -32,14 +51,23 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.06,
         shadowRadius: 4,
     },
-    cardSmall: {
+    statCard: {
         flex: 1,
         backgroundColor: '#FFFFFF',
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 16,
-        marginLeft: 8,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    statIconCircle: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#334155',
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 2,
@@ -48,83 +76,126 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.06,
         shadowRadius: 4,
     },
-    cardTitle: {
-        fontSize: 13,
+    statValue: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    statLabel: {
+        fontSize: 12,
         fontWeight: '600',
         color: '#6B7280',
-        marginBottom: 12,
+        marginBottom: 2,
     },
-    centered: {
+    statSubLabel: {
+        fontSize: 11,
+        color: '#9CA3AF',
+        fontWeight: '500',
+    },
+
+    // Chart Card - Modern glassmorphism
+    chartCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 24,
+        marginBottom: 20,
+        marginHorizontal: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+        elevation: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(99, 102, 241, 0.08)',
+    },
+    chartTitle: {
+        fontSize: 19,
+        fontWeight: '800',
+        color: '#1F2937',
+        marginBottom: 24,
+        letterSpacing: 0.3,
+    },
+    chartContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
     },
-    pieCenterTextWrap: {
+    pieWrapper: {
+        position: 'relative',
+        width: 180,
+        height: 180,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pieCenterText: {
         position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    pieCenterPercent: {
-        fontSize: 18,
+    pieCenterNumber: {
+        fontSize: 28,
         fontWeight: '700',
         color: '#1F2937',
     },
-    pieCenterSub: {
-        fontSize: 11,
+    pieCenterLabel: {
+        fontSize: 12,
         color: '#9CA3AF',
         marginTop: 2,
     },
-    legendRow: {
+    legendContainer: {
+        flex: 1,
+        marginLeft: 20,
+    },
+    legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 6,
         width: '100%'
     },
-    legendColor: {
+    legendDot: {
         width: 12,
         height: 12,
-        borderRadius: 3,
+        borderRadius: 6,
         marginRight: 8,
     },
-    legendLabel: {
-        fontSize: 12,
+    legendText: {
+        flex: 1,
+        fontSize: 13,
         color: '#4B5563',
         marginRight: 6,
         flex: 1,
     },
-    legendValue: {
-        fontSize: 12,
-        fontWeight: '600',
+    legendCount: {
+        fontSize: 14,
+        fontWeight: '700',
         color: '#1F2937',
         marginLeft: 8,
     },
-    bigPercent: {
-        fontSize: 36,
-        fontWeight: '700',
-        color: '#10B981',
-        marginVertical: 8,
+    emptyChart: {
+        alignItems: 'center',
+        paddingVertical: 40,
     },
-    cardSub: {
-        fontSize: 11,
+    emptyText: {
+        fontSize: 14,
         color: '#9CA3AF',
+        marginTop: 12,
     },
-    filterRow: {
-        marginBottom: 12,
-    },
-    filterRowSmall: {
-        marginBottom: 16,
-    },
-    chip: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+
+    // Top Devices Card - Modern glassmorphism
+    topDevicesCard: {
+        backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        backgroundColor: '#F3F4F6',
-        marginRight: 8,
+        padding: 24,
+        marginBottom: 20,
+        marginHorizontal: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+        elevation: 5,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: 'rgba(99, 102, 241, 0.08)',
     },
     chipActive: {
         backgroundColor: '#3B82F6',
@@ -266,29 +337,41 @@ export const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: '#34D399',
     },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: '600',
+    cardHeaderTitle: {
+        fontSize: 19,
+        fontWeight: '800',
         color: '#1F2937',
-        marginBottom: 12,
+        marginLeft: 10,
+        letterSpacing: 0.3,
     },
-    itemRow: {
+    deviceItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#F3F4F6',
     },
-    itemTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 4,
+    deviceRank: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#334155',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
     },
-    itemSubtitle: {
-        fontSize: 12,
-        color: '#9CA3AF',
+    rankNumber: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#FFF',
+    },
+    deviceImageContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 12,
+        overflow: 'hidden',
+        marginRight: 12,
+        backgroundColor: '#F9FAFB',
     },
     metaText: {
         fontSize: 12,
@@ -300,9 +383,12 @@ export const styles = StyleSheet.create({
         color: '#3B82F6',
         marginBottom: 2,
     },
-    itemSmall: {
-        fontSize: 11,
-        color: '#9CA3AF',
+    deviceImagePlaceholder: {
+        width: 48,
+        height: 48,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F3F4F6',
     },
     statusSummary: {
         flexDirection: 'row',
@@ -362,25 +448,27 @@ export const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#F3F4F6',
     },
-    recentTitle: {
+    deviceName: {
         fontSize: 14,
         fontWeight: '600',
         color: '#1F2937',
-        marginBottom: 4,
+        marginBottom: 2,
     },
-    recentSub: {
+    deviceCode: {
         fontSize: 12,
-        color: '#6B7280',
+        color: '#9CA3AF',
     },
-    recentTime: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 4,
+    deviceCount: {
+        alignItems: 'center',
+        minWidth: 50,
     },
-    recentStatus: {
+    countNumber: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#334155',
+    },
+    countLabel: {
         fontSize: 11,
-        color: '#10B981',
-        fontWeight: '500',
+        color: '#9CA3AF',
     },
 });

@@ -1,12 +1,13 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const COLORS = {
-  background: '#FFFFFF',
-  textMain: '#111111',
-  textSecondary: '#666666',
-  primary: '#007AFF',
-  inputBg: '#F5F5F5',
-  categoryBg: '#F0F2F5',
+    background: '#F5F7FA',
+    textMain: '#1F2937',
+    textSecondary: '#6B7280',
+    primary: '#334155',
+    inputBg: '#FFFFFF',
+    categoryBg: '#F3F4F6',
+    border: '#E5E7EB',
 };
 
 export const styles = StyleSheet.create({
@@ -16,34 +17,49 @@ export const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingTop: 60,
     },
-    headerContainer: {
+
+    // Gradient Header
+    headerGradient: {
         paddingHorizontal: 20,
+        paddingTop: 60,
+        paddingBottom: 32,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
         marginBottom: 20,
     },
     headerTitle: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: '800',
-        color: COLORS.textMain,
-        marginBottom: 8,
+        color: '#FFFFFF',
+        marginBottom: 6,
     },
     headerSubtitle: {
         fontSize: 15,
-        color: COLORS.textSecondary,
+        color: 'rgba(255, 255, 255, 0.9)',
+        fontWeight: '400',
     },
+
+    // Search
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: COLORS.inputBg,
         marginHorizontal: 20,
-        paddingHorizontal: 15,
-        height: 50,
-        borderRadius: 12,
+        paddingHorizontal: 16,
+        height: 52,
+        borderRadius: 16,
         marginBottom: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
     searchIcon: {
-        marginRight: 10,
+        marginRight: 12,
     },
     searchInput: {
         flex: 1,
@@ -51,19 +67,29 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         color: COLORS.textMain,
     },
+
+    // Category filters
     categoryContainer: {
         marginBottom: 20,
         paddingLeft: 20,
     },
     categoryItem: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingVertical: 10,
+        paddingHorizontal: 18,
         backgroundColor: COLORS.categoryBg,
-        borderRadius: 20,
+        borderRadius: 24,
         marginRight: 10,
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
     categoryItemSelected: {
-        backgroundColor: COLORS.textMain,
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
     },
     categoryText: {
         fontSize: 14,
@@ -72,11 +98,15 @@ export const styles = StyleSheet.create({
     },
     categoryTextSelected: {
         color: '#FFFFFF',
+        fontWeight: '700',
     },
+
+    // Device grid
     gridContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
+        paddingBottom: 20,
     },
 });

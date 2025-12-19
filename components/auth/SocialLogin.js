@@ -1,4 +1,4 @@
-import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -16,11 +16,11 @@ export const GoogleLoginButton = ({ onPress, loading = false }) => {
       disabled={loading}
     >
       <View style={styles.content}>
-        <Text style={styles.icon}>🔵</Text>
+        <Ionicons name="logo-google" size={20} color="#334155" />
         {loading ? (
-          <ActivityIndicator color="#333" />
+          <ActivityIndicator color="#334155" />
         ) : (
-          <Text style={styles.text}>Sign in with Google</Text>
+          <Text style={styles.text}>Đăng nhập với Google</Text>
         )}
       </View>
     </TouchableOpacity>
@@ -32,7 +32,7 @@ export const Divider = () => {
   return (
     <View style={styles.dividerContainer}>
       <View style={styles.dividerLine} />
-      <Text style={styles.dividerText}>or</Text>
+      <Text style={styles.dividerText}>hoặc</Text>
       <View style={styles.dividerLine} />
     </View>
   );
@@ -40,14 +40,15 @@ export const Divider = () => {
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1.5,
+    borderColor: "#E2E8F0",
+    borderRadius: 16,
+    paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 10,
-    backgroundColor: "#fff",
+    marginHorizontal: 24,
+    marginBottom: 20,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -56,29 +57,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-  },
-  icon: {
-    fontSize: 20,
-    marginRight: 10,
+    gap: 12,
   },
   text: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#333",
+    color: "#1E293B",
   },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 15,
+    marginVertical: 20,
+    marginHorizontal: 24,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: "#E2E8F0",
   },
   dividerText: {
-    marginHorizontal: 10,
-    color: "#999",
-    fontSize: 12,
+    marginHorizontal: 16,
+    color: "#64748B",
+    fontSize: 13,
+    fontWeight: "500",
+    textTransform: "uppercase",
   },
 });

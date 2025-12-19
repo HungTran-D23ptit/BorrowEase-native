@@ -10,23 +10,32 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 16,
+        paddingTop: 20,
+        paddingBottom: 12,
+        paddingHorizontal: 4,
     },
     headerTitle: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: '700',
         color: '#1F2937',
     },
     markAllBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 6,
-        backgroundColor: '#E5E7EB',
+        paddingVertical: 7,
+        borderRadius: 20,
+        backgroundColor: '#334155',
+        shadowColor: '#334155',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 3,
     },
     markAllText: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '600',
-        color: '#4B5563',
+        color: '#FFFFFF',
     },
     card: {
         flexDirection: 'row',
@@ -40,10 +49,6 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 2,
         elevation: 1,
-    },
-    cardRead: {
-        backgroundColor: '#F9FAFB',
-        opacity: 0.7,
     },
     leftCol: {
         marginRight: 12,
@@ -66,19 +71,13 @@ export const styles = StyleSheet.create({
     title: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1F2937',
+        color: '#111827',
         marginBottom: 4,
-    },
-    titleRead: {
-        color: '#9CA3AF',
     },
     message: {
         fontSize: 13,
-        color: '#6B7280',
+        color: '#374151',
         lineHeight: 18,
-    },
-    messageRead: {
-        color: '#D1D5DB',
     },
     rightCol: {
         alignItems: 'flex-end',
@@ -89,9 +88,6 @@ export const styles = StyleSheet.create({
         fontSize: 11,
         color: '#9CA3AF',
         marginBottom: 4,
-    },
-    timeTextRead: {
-        color: '#D1D5DB',
     },
     unreadDot: {
         width: 8,

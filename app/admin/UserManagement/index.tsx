@@ -1,14 +1,12 @@
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import {
-    Alert,
+    ActivityIndicator,
     FlatList,
     Image,
     KeyboardAvoidingView,
     Modal,
-    Platform,
-    SafeAreaView,
-    ScrollView,
+    RefreshControl,
     Text,
     TextInput,
     TouchableOpacity,
@@ -47,9 +45,6 @@ const SAMPLE_USERS: User[] = Array.from({ length: 8 }).map((_, i) => ({
 }));
 
 export default function UserManagement() {
-    const [tab, setTab] = useState<'user' | 'admin'>('user');
-    const [users, setUsers] = useState<User[]>(SAMPLE_USERS);
-    const [expandedId, setExpandedId] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -58,37 +53,33 @@ export default function UserManagement() {
         setExpandedId(prev => (prev === id ? null : id));
     }
 
-    function onAdd() {
-        setEditingUser(null);
-        setModalVisible(true);
+    function onToggleLock(user: any) {
+        const isLocked = user.status === 'DE_ACTIVE';
+        const action = isLocked ? 'mở khóa' : 'khóa';
+        setConfirmModal({ visible: true, user, action });
     }
 
-    function onEdit(user: User) {
-        setEditingUser(user);
-        setModalVisible(true);
-    }
+    async function handleConfirmToggleLock() {
+        const { user, action } = confirmModal;
+        if (!user) return;
 
-    function onDelete(user: User) {
-        Alert.alert('Xác nhận', `Bạn có chắc muốn xóa ${user.name}?`, [
-            { text: 'Hủy', style: 'cancel' },
-            {
-                text: 'Xóa',
-                style: 'destructive',
-                onPress: () => {
-                    setUsers(prev => prev.filter(u => u.id !== user.id));
-                },
-            },
-        ]);
-    }
+        const isLocked = user.status === 'DE_ACTIVE';
 
-    function onSave(form: User) {
-        if (editingUser) {
-            setUsers(prev => prev.map(u => (u.id === form.id ? form : u)));
-        } else {
-            setUsers(prev => [{ ...form, id: String(prev.length + 1) }, ...prev]);
+        try {
+            if (isLocked) {
+                await activateUser(user._id);
+                showSuccess(`Đã mở khóa tài khoản ${user.name} thành công`);
+            } else {
+                await deleteUser(user._id);
+                showSuccess(`Đã khóa tài khoản ${user.name} thành công`);
+            }
+            setTimeout(() => {
+                refresh();
+            }, 500);
+        } catch (error) {
+            console.error('Toggle lock error:', error);
+            showError(`Không thể ${action} tài khoản`);
         }
-        setModalVisible(false);
-        setEditingUser(null);
     }
 
     // ⭐ Lọc theo search + theo tab + theo role
@@ -104,30 +95,48 @@ export default function UserManagement() {
         return true;
     });
 
+    const activePercent = stats ? Math.round((stats.active / stats.total) * 100) : 0;
+
     return (
-        <SafeAreaView style={s.container}>
-            <Text style={s.header}>Danh sách người dùng</Text>
+        <View style={s.container}>
+            {/* HEADER WITH GRADIENT */}
+            <LinearGradient
+                colors={['#1E293B', '#334155']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={s.headerGradient}
+            >
+                <Text style={s.headerTitle}>Quản lý người dùng</Text>
+                <Text style={s.headerSubtitle}>
+                    {stats?.total || 0} người dùng trong hệ thống
+                </Text>
+            </LinearGradient>
 
-            <View style={s.searchRow}>
-                <TextInput
-                    placeholder="Tìm kiếm"
-                    value={search}
-                    onChangeText={setSearch}
-                    style={s.searchInput}
-                />
-            </View>
+            {/* STATS CARDS */}
+            <View style={s.statsContainer}>
+                <View style={[s.statCard, { backgroundColor: '#E8F5E9' }]}>
+                    <View style={[s.statIconCircle, { backgroundColor: '#34C759' }]}>
+                        <MaterialCommunityIcons name="account-check" size={24} color="#FFF" />
+                    </View>
+                    <Text style={s.statValue}>{stats?.active || 0}</Text>
+                    <Text style={s.statLabel}>Hoạt động</Text>
+                </View>
 
-            <View style={s.tabRow}>
-                <TouchableOpacity
-                    style={[s.tabBtn, tab === 'user' && s.tabActive]}
-                    onPress={() => setTab('user')}>
-                    <Text style={[s.tabText, tab === 'user' && s.tabTextActive]}>Người dùng</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[s.tabBtn, tab === 'admin' && s.tabActive]}
-                    onPress={() => setTab('admin')}>
-                    <Text style={[s.tabText, tab === 'admin' && s.tabTextActive]}>Quản trị</Text>
-                </TouchableOpacity>
+                <View style={[s.statCard, { backgroundColor: '#FFEBEE' }]}>
+                    <View style={[s.statIconCircle, { backgroundColor: '#FF3B30' }]}>
+                        <MaterialCommunityIcons name="account-off" size={24} color="#FFF" />
+                    </View>
+                    <Text style={s.statValue}>{stats?.deActive || 0}</Text>
+                    <Text style={s.statLabel}>Bị khóa</Text>
+                </View>
+
+                <View style={[s.statCard, { backgroundColor: '#E3F2FD' }]}>
+                    <View style={[s.statIconCircle, { backgroundColor: '#007AFF' }]}>
+                        <MaterialCommunityIcons name="account-group" size={24} color="#FFF" />
+                    </View>
+                    <Text style={s.statValue}>{activePercent}%</Text>
+                    <Text style={s.statLabel}>Tỷ lệ hoạt động</Text>
+                </View>
             </View>
 
             <FlatList
@@ -168,8 +177,6 @@ export default function UserManagement() {
                                         {expandedId === item.id ? '▲' : '▼'}
                                     </Text>
                                 </TouchableOpacity>
-                            </View>
-                        </View>
 
                         {expandedId === item.id && (
                             <View style={s.cardBody}>
@@ -344,31 +351,39 @@ function UserFormModal({
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={s.fieldLabel}>Quyền</Text>
-                        <View style={s.optionRow}>
-                            <TouchableOpacity onPress={() => setRole('Edit')} style={[s.optionBtn, role === 'Edit' && s.optionActive]}>
-                                <Text style={role === 'Edit' ? s.optionTextActive : s.optionText}>Edit</Text>
+                        <View style={s.modalActions}>
+                            <TouchableOpacity
+                                style={s.modalCancelButton}
+                                onPress={() => setConfirmModal({ visible: false, user: null, action: '' })}
+                                disabled={actionLoading}
+                            >
+                                <Text style={s.modalCancelText}>Hủy</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setRole('View')} style={[s.optionBtn, role === 'View' && s.optionActive]}>
-                                <Text style={role === 'View' ? s.optionTextActive : s.optionText}>View</Text>
+
+                            <TouchableOpacity
+                                style={[
+                                    s.modalConfirmButton,
+                                    {
+                                        backgroundColor:
+                                            confirmModal.action === 'khóa' ? '#FF3B30' : '#34C759',
+                                    },
+                                ]}
+                                onPress={async () => {
+                                    await handleConfirmToggleLock();
+                                    setConfirmModal({ visible: false, user: null, action: '' });
+                                }}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading ? (
+                                    <ActivityIndicator size="small" color="#FFF" />
+                                ) : (
+                                    <Text style={s.modalConfirmText}>Xác nhận</Text>
+                                )}
                             </TouchableOpacity>
                         </View>
-
-                        <View style={{ height: 18 }} />
-
-                        <View style={s.modalActionsRow}>
-                            <TouchableOpacity style={[s.modalActionBtn, { backgroundColor: '#E5E7EB' }]} onPress={onClose}>
-                                <Text>Hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[s.modalActionBtn, { backgroundColor: '#10B981' }]} onPress={handleSave}>
-                                <Text style={{ color: '#fff' }}>Lưu</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={{ height: 40 }} />
-                    </ScrollView>
+                    </View>
                 </View>
-            </KeyboardAvoidingView>
-        </Modal>
+            </Modal>
+        </View>
     );
 }

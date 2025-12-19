@@ -4,7 +4,7 @@ const APP_COLORS = {
     background: '#FFFFFF',
     textMain: '#111111',
     textSecondary: '#666666',
-    primary: '#FF6B35',
+    primary: '#334155',
     primaryLight: '#FFE5DC',
 };
 
@@ -12,6 +12,33 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: APP_COLORS.background,
+    },
+
+    // Loading & Error States
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: APP_COLORS.background,
+    },
+    loadingText: {
+        marginTop: 12,
+        fontSize: 14,
+        color: APP_COLORS.textSecondary,
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: APP_COLORS.background,
+        padding: 20,
+    },
+    errorText: {
+        marginTop: 16,
+        fontSize: 16,
+        fontWeight: '600',
+        color: APP_COLORS.textMain,
+        textAlign: 'center',
     },
 
     // Image Container
@@ -24,9 +51,15 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
     mainImage: {
-        width: '80%',
-        height: '80%',
-        resizeMode: 'contain',
+        width: '100%',
+        height: '100%',
+    },
+    imagePlaceholder: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
     },
     backButton: {
         position: 'absolute',
@@ -40,21 +73,11 @@ export const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.9)',
         alignItems: 'center',
     },
-    dotsContainer: {
-        position: 'absolute',
-        bottom: 15,
-        flexDirection: 'row',
-        alignSelf: 'center',
-    },
-    dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#DDD',
-        marginHorizontal: 4,
-    },
-    activeDot: {
-        backgroundColor: APP_COLORS.primary,
+    backButtonText: {
+        marginTop: 8,
+        fontSize: 14,
+        color: APP_COLORS.primary,
+        fontWeight: '600',
     },
 
     // Content Container
@@ -76,6 +99,12 @@ export const styles = StyleSheet.create({
     categoryText: {
         fontSize: 14,
         color: APP_COLORS.textSecondary,
+        marginBottom: 2,
+    },
+    deviceCode: {
+        fontSize: 13,
+        color: APP_COLORS.textSecondary,
+        fontWeight: '500',
     },
     statusBadge: {
         paddingHorizontal: 12,
@@ -133,60 +162,61 @@ export const styles = StyleSheet.create({
         textAlign: 'justify',
     },
 
-    // Specifications
-    specRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
-    },
-    specLabel: {
-        fontSize: 14,
-        color: APP_COLORS.textSecondary,
-        flex: 1,
-    },
-    specValue: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: APP_COLORS.textMain,
-        flex: 1,
-        textAlign: 'right',
-    },
-
-    // History
-    historyCard: {
+    // Reviews
+    reviewCard: {
         backgroundColor: '#F8F9FA',
         borderRadius: 12,
         padding: 14,
-        marginBottom: 10,
+        marginBottom: 12,
     },
-    historyHeader: {
+    reviewHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         marginBottom: 8,
     },
-    historyUser: {
+    reviewUserInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    reviewAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#E0E0E0',
+    },
+    reviewUserDetails: {
+        marginLeft: 10,
+        flex: 1,
+    },
+    reviewUserName: {
         fontSize: 15,
         fontWeight: '700',
         color: APP_COLORS.textMain,
     },
-    historyStatusBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    historyStatusText: {
-        fontSize: 11,
-        fontWeight: '600',
-    },
-    historyDates: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    historyDate: {
+    reviewDate: {
         fontSize: 12,
+        color: APP_COLORS.textSecondary,
+        marginTop: 2,
+    },
+    ratingContainer: {
+        flexDirection: 'row',
+        gap: 2,
+    },
+    reviewComment: {
+        fontSize: 14,
+        color: APP_COLORS.textSecondary,
+        lineHeight: 20,
+        marginTop: 8,
+    },
+    emptyReviews: {
+        alignItems: 'center',
+        paddingVertical: 40,
+    },
+    emptyText: {
+        marginTop: 12,
+        fontSize: 14,
         color: APP_COLORS.textSecondary,
     },
 
@@ -221,7 +251,7 @@ export const styles = StyleSheet.create({
     },
     statusButton: {
         width: 50,
-        backgroundColor: APP_COLORS.primaryLight,
+        backgroundColor: '#FFF3E0',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 12,
@@ -232,5 +262,150 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 12,
+    },
+
+    // Modal Styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        maxHeight: '90%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: APP_COLORS.textMain,
+    },
+    modalBody: {
+        padding: 20,
+        maxHeight: 500,
+    },
+    modalFooter: {
+        flexDirection: 'row',
+        padding: 20,
+        gap: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#F0F0F0',
+    },
+
+    // Form Styles
+    formGroup: {
+        marginBottom: 20,
+    },
+    formLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: APP_COLORS.textMain,
+        marginBottom: 8,
+    },
+    formInput: {
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        borderRadius: 12,
+        padding: 14,
+        fontSize: 14,
+        color: APP_COLORS.textMain,
+        backgroundColor: '#FFF',
+    },
+    formInputDisabled: {
+        backgroundColor: '#F5F5F5',
+        color: APP_COLORS.textSecondary,
+    },
+    formTextArea: {
+        height: 100,
+        textAlignVertical: 'top',
+    },
+
+    // Type Selector
+    typeSelector: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    typeOption: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        backgroundColor: '#FFF',
+    },
+    typeOptionActive: {
+        backgroundColor: APP_COLORS.primary,
+        borderColor: APP_COLORS.primary,
+    },
+    typeOptionText: {
+        fontSize: 14,
+        color: APP_COLORS.textSecondary,
+        fontWeight: '500',
+    },
+    typeOptionTextActive: {
+        color: '#FFF',
+        fontWeight: '600',
+    },
+
+    // Status Selector
+    statusSelector: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    statusOption: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        backgroundColor: '#FFF',
+        alignItems: 'center',
+    },
+    statusOptionActive: {
+        backgroundColor: APP_COLORS.primary,
+        borderColor: APP_COLORS.primary,
+    },
+    statusOptionText: {
+        fontSize: 14,
+        color: APP_COLORS.textSecondary,
+        fontWeight: '500',
+    },
+    statusOptionTextActive: {
+        color: '#FFF',
+        fontWeight: '600',
+    },
+
+    // Modal Buttons
+    modalButton: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalButtonCancel: {
+        backgroundColor: '#F5F5F5',
+    },
+    modalButtonSubmit: {
+        backgroundColor: APP_COLORS.primary,
+    },
+    modalButtonTextCancel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: APP_COLORS.textSecondary,
+    },
+    modalButtonTextSubmit: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#FFF',
     },
 });
