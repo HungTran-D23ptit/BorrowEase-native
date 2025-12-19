@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 import { LoginForm, RegisterForm } from "../../../components/auth/AuthForms";
 import {
   Divider,
@@ -24,6 +26,8 @@ import {
 import { parseApiError } from "../../../utils/errorHandler";
 import { styles } from "./styles";
 
+WebBrowser.maybeCompleteAuthSession();
+
 export default function LoginScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("user");
@@ -35,21 +39,54 @@ export default function LoginScreen() {
   const googleLoginHook = useGoogleLogin();
   const userRegisterHook = useUserRegister();
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: '306704646002-0cjbqkv9g9aihgnkgm826hivphfk80g8.apps.googleusercontent.com',
+    androidClientId: '306704646002-0cjbqkv9g9aihgnkgm826hivphfk80g8.apps.googleusercontent.com',
+    iosClientId: '306704646002-0cjbqkv9g9aihgnkgm826hivphfk80g8.apps.googleusercontent.com',
+  });
+
   const currentLoginHook =
     activeTab === "user" ? userLoginHook : adminLoginHook;
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      if (authentication?.idToken) {
+        handleGoogleLoginWithToken(authentication.idToken);
+      }
+    }
+  }, [response]);
+
+  const handleGoogleLoginWithToken = async (idToken) => {
+    try {
+      const response = await googleLoginHook.login(idToken);
+
+      const token = response?.data?.access_token || response?.data?.data?.access_token;
+
+      if (response && token) {
+        showSuccess("Đăng nhập Google thành công!");
+
+        setTimeout(() => {
+          router.replace("/user");
+        }, 100);
+      } else {
+        showError("Đăng nhập thất bại: Không nhận được token");
+      }
+    } catch (error) {
+      const errorMessage = parseApiError(error, "Đăng nhập Google thất bại");
+      showError(errorMessage);
+    }
+  };
 
   const handleLogin = async (email, password) => {
     try {
       const response = await currentLoginHook.login(email, password);
 
-      // Check if login was successful
-      // API returns: { data: { access_token, expire_in, auth_type } }
       const token = response?.data?.access_token || response?.data?.data?.access_token;
 
       if (response && token) {
         showSuccess("Đăng nhập thành công!");
 
-        // Use setTimeout to ensure toast shows before navigation
         setTimeout(() => {
           if (activeTab === "user") {
             router.replace("/user");
@@ -85,9 +122,10 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = async () => {
     try {
-      console.log("Google login for:", activeTab);
+      await promptAsync();
     } catch (error) {
       console.error("Google login error:", error);
+      showError("Không thể mở Google Sign-In");
     }
   };
 
@@ -129,7 +167,7 @@ export default function LoginScreen() {
                   activeTab={activeTab}
                   onTabChange={(tab) => {
                     setActiveTab(tab);
-                    setFormType("login"); // Reset to login when switching tabs
+                    setFormType("login");
                   }}
                   tabs={["user", "admin"]}
                 />

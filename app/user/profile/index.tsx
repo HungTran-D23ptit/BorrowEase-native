@@ -2,11 +2,10 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { showError } from '../../../services/ToastService';
 import { getImageUrl } from '../../../services/rootApi';
 import * as profileService from '../../../services/user/profile.service';
-// import * as Updates from 'expo-updates'; // This import is no longer needed
 
 interface UserProfile {
   _id: string;
@@ -26,6 +25,7 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const fetchProfile = async () => {
     try {
@@ -50,21 +50,12 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Đăng xuất',
-      'Bạn có chắc chắn muốn đăng xuất?',
-      [
-        { text: 'Hủy', style: 'cancel' },
-        {
-          text: 'Đăng xuất',
-          style: 'destructive',
-          onPress: () => {
-            // Navigate to logout screen để clear tokens và redirect
-            router.push('/user/logout' as any);
-          },
-        },
-      ]
-    );
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    router.push('/user/logout' as any);
   };
 
   const formatDate = (dateString?: string) => {
@@ -237,6 +228,56 @@ export default function ProfileScreen() {
 
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        visible={showLogoutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLogoutModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Icon */}
+            <View style={styles.modalIconContainer}>
+              <LinearGradient
+                colors={['#EF4444', '#DC2626']}
+                style={styles.modalIconGradient}
+              >
+                <Ionicons name="log-out-outline" size={32} color="#FFF" />
+              </LinearGradient>
+            </View>
+
+            {/* Title & Message */}
+            <Text style={styles.modalTitle}>Đăng xuất</Text>
+            <Text style={styles.modalMessage}>
+              Bạn có chắc chắn muốn đăng xuất?
+            </Text>
+
+            {/* Buttons */}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonCancel]}
+                onPress={() => setShowLogoutModal(false)}
+              >
+                <Text style={styles.modalButtonTextCancel}>Hủy</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonConfirm]}
+                onPress={confirmLogout}
+              >
+                <LinearGradient
+                  colors={['#EF4444', '#DC2626']}
+                  style={styles.modalButtonGradient}
+                >
+                  <Text style={styles.modalButtonTextConfirm}>Đăng xuất</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -274,7 +315,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Gradient Header
   headerGradient: {
     paddingTop: 60,
     paddingBottom: 32,
@@ -406,5 +446,81 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F3F4F6',
     marginLeft: 54,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    padding: 28,
+    width: '100%',
+    maxWidth: 340,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalIconContainer: {
+    marginBottom: 20,
+  },
+  modalIconGradient: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 15,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 28,
+    lineHeight: 22,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  modalButtonConfirm: {
+    overflow: 'hidden',
+  },
+  modalButtonGradient: {
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  modalButtonTextCancel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  modalButtonTextConfirm: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFF',
   },
 });

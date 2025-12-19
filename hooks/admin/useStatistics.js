@@ -2,10 +2,31 @@ import * as statisticsService from '@/services/admin/statistics.service';
 import { handleApiError } from '@/utils/errorHandler';
 import { useCallback, useEffect, useState } from 'react';
 
+/**
+ * @typedef {Object} UserStats
+ * @property {number} total
+ */
+
+/**
+ * @typedef {Object} DeviceStats
+ * @property {number} total
+ */
+
+/**
+ * @typedef {Object} RequestStats
+ * @property {number} PENDING
+ * @property {number} APPROVED
+ * @property {number} REJECTED
+ * @property {number} RETURNING
+ * @property {number} RETURNED
+ * @property {number} OVERDUE
+ * @property {number} CANCELLED
+ */
+
 export const useStatistics = () => {
-    const [userStats, setUserStats] = useState(null);
-    const [deviceStats, setDeviceStats] = useState(null);
-    const [requestStats, setRequestStats] = useState(null);
+    const [userStats, setUserStats] = useState(/** @type {UserStats | null} */(null));
+    const [deviceStats, setDeviceStats] = useState(/** @type {DeviceStats | null} */(null));
+    const [requestStats, setRequestStats] = useState(/** @type {RequestStats | null} */(null));
     const [mostBorrowed, setMostBorrowed] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);

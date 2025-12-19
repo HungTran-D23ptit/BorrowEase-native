@@ -63,12 +63,13 @@ export default function NotificationsScreen() {
 
     const handleNotificationPress = async (notification: Notification) => {
         try {
-            // Navigate đến trang liên quan nếu có
             if (notification.related_type === 'BORROW_REQUEST' && notification.related_id) {
-                router.push(`/ user / management / detail / ${notification.related_id} ` as any);
+                router.push({
+                    pathname: '/user/management',
+                    params: { requestId: notification.related_id }
+                } as any);
             }
 
-            // Đánh dấu đã đọc nếu chưa đọc (không cần refresh ngay)
             if (!notification.is_read) {
                 markAsRead(notification._id).catch(err => {
                     console.error('Error marking as read:', err);

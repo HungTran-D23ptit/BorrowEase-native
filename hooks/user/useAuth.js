@@ -64,17 +64,22 @@ export const useGoogleLogin = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const loginWithGoogle = async (googleToken) => {
+  const login = async (idToken) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
     try {
+      console.log('Sending ID token to backend...');
+
+      // Send ID token to backend
       const response = await userAuthService.userLoginWithGoogle({
-        token: googleToken,
+        id_token: idToken,
       });
+
       setSuccess(true);
       return response;
     } catch (err) {
+      console.error('Google login error:', err);
       const message = handleApiError(err, "Đăng nhập Google thất bại", false);
       setError(message);
       throw err;
@@ -83,7 +88,7 @@ export const useGoogleLogin = () => {
     }
   };
 
-  return { loginWithGoogle, loading, error, success };
+  return { login, loading, error, success };
 };
 
 export const useForgotPassword = () => {

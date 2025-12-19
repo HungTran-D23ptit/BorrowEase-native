@@ -3,7 +3,6 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { ToastProvider } from '../../contexts/ToastContext';
 
-// Màu chủ đạo
 const ACTIVE_COLOR = '#334155';
 const INACTIVE_COLOR = '#8E8E93';
 
@@ -29,6 +28,7 @@ export default function UserLayout() {
             marginBottom: 0,
           },
         }}
+        backBehavior="none"
       >
         {/* 1. TRANG CHỦ */}
         <Tabs.Screen

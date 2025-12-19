@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as authService from '../../../services/user/auth.service';
@@ -18,7 +19,6 @@ export default function ChangePasswordScreen() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleChangePassword = async () => {
-        // Validation
         if (!oldPassword.trim()) {
             showError('Vui lòng nhập mật khẩu cũ');
             return;
@@ -46,7 +46,7 @@ export default function ChangePasswordScreen() {
 
         try {
             setLoading(true);
-            await authService.userChangePassword(oldPassword, newPassword);
+            await authService.userChangePassword(oldPassword, newPassword, confirmPassword);
             showSuccess('Đổi mật khẩu thành công');
             router.back();
         } catch (error: any) {
@@ -59,14 +59,30 @@ export default function ChangePasswordScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Đổi mật khẩu</Text>
-                <View style={{ width: 40 }} />
-            </View>
+            {/* Gradient Header */}
+            <LinearGradient
+                colors={['#334155', '#475569']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.headerGradient}
+            >
+                <View style={styles.headerContent}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => {
+                            if (router.canGoBack()) {
+                                router.back();
+                            } else {
+                                router.replace('/user/profile' as any);
+                            }
+                        }}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#FFF" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Đổi mật khẩu</Text>
+                    <View style={{ width: 40 }} />
+                </View>
+            </LinearGradient>
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <View style={styles.form}>
@@ -191,6 +207,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#E5E5E5',
     },
+    headerGradient: {
+        paddingTop: 50,
+        paddingBottom: 16,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+    },
     backButton: {
         width: 40,
         height: 40,
@@ -198,9 +224,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#FFF',
     },
     scrollView: {
         flex: 1,

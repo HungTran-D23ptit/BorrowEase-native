@@ -4,8 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DeviceCard from '../../../components/DeviceCard';
-
-// 👇 Import styles từ file bên cạnh
 import { styles } from './style';
 
 interface Device {
@@ -26,13 +24,11 @@ export default function ExploreScreen() {
     const [selectedCategory, setSelectedCategory] = useState('Tất cả');
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
-    // Use the devices hook
     const { devices, loading, error, refresh, updateParams } = useDevices({
         page: 1,
         per_page: 20,
     });
 
-    // Debounce search input
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchText);
@@ -41,11 +37,10 @@ export default function ExploreScreen() {
         return () => clearTimeout(timer);
     }, [searchText]);
 
-    // Update API params when search changes (not category, we filter on FE)
     useEffect(() => {
         const params: any = {
             page: 1,
-            per_page: 100, // Get more items to filter on FE
+            per_page: 100, 
         };
 
         if (debouncedSearch) {
@@ -55,7 +50,6 @@ export default function ExploreScreen() {
         updateParams(params);
     }, [debouncedSearch]);
 
-    // Filter devices by category on frontend
     const filteredDevices = React.useMemo(() => {
         if (!devices) return [];
 

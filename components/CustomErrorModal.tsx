@@ -62,12 +62,10 @@ export default function CustomErrorModal({
 
     useEffect(() => {
         if (visible) {
-            // Reset animations
             scaleAnim.setValue(0);
             fadeAnim.setValue(0);
             pulseAnim.setValue(1);
 
-            // Start animations
             Animated.parallel([
                 Animated.spring(scaleAnim, {
                     toValue: 1,
@@ -82,7 +80,6 @@ export default function CustomErrorModal({
                 }),
             ]).start();
 
-            // Pulse animation for icon
             Animated.loop(
                 Animated.sequence([
                     Animated.timing(pulseAnim, {

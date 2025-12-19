@@ -39,7 +39,7 @@ export default function HomeScreen() {
                 profileService.getUserProfile(),
                 borrowRequestService.getBorrowingDevices({ per_page: 5 }),
                 borrowRequestService.getOverdueDevices({ per_page: 5 }),
-                deviceService.getRecommendedDevices({ per_page: 6 }),
+                deviceService.getRecommendedDevices(),
             ]);
 
             setUserProfile(profileRes);
@@ -161,7 +161,7 @@ export default function HomeScreen() {
                     onPress={() => router.push('/user/explore' as any)}
                 >
                     <View style={styles.quickActionIcon}>
-                        <MaterialCommunityIcons name="devices" size={24} color="#334155" />
+                        <Ionicons name="laptop-outline" size={24} color="#334155" />
                     </View>
                     <Text style={styles.quickActionText}>Mượn thiết bị</Text>
                 </TouchableOpacity>

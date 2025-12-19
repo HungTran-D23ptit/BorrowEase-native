@@ -22,7 +22,6 @@ export const createBorrowRequest = async (deviceId, data) => {
 /**
  * Lấy danh sách đơn mượn theo trạng thái
  * @param {Object} params - { status, page, per_page }
- * status có thể là: 'pending', 'approved', 'rejected', 'cancelled', 'borrowing', 'returned', 'overdue'
  */
 export const getBorrowRequests = async (params = {}) => {
     try {

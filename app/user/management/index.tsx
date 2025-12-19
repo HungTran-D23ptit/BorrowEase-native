@@ -1,6 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, LayoutAnimation, Modal, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
 import { showError, showSuccess } from '../../../services/ToastService';
@@ -32,6 +32,7 @@ interface BorrowRequest {
 
 export default function ManagementScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
     const [searchText, setSearchText] = useState('');
     const [expandedSection, setExpandedSection] = useState<string | null>('pending');
 
@@ -170,6 +171,28 @@ export default function ManagementScreen() {
     useEffect(() => {
         fetchAllRequests();
     }, []);
+
+    // Auto-open modal when navigating from notification
+    useEffect(() => {
+        if (params.requestId && !loading) {
+            const requestId = params.requestId as string;
+            // Find the request in all lists
+            const allRequests = [
+                ...pendingRequests,
+                ...borrowingRequests,
+                ...overdueRequests,
+                ...cancelledRequests,
+                ...returnedRequests,
+            ];
+            const foundRequest = allRequests.find(req => req._id === requestId);
+
+            if (foundRequest) {
+                setSelectedRequest(foundRequest);
+                setSelectedRequestId(requestId);
+                setDetailModalVisible(true);
+            }
+        }
+    }, [params.requestId, loading, pendingRequests, borrowingRequests, overdueRequests, cancelledRequests, returnedRequests]);
 
     const toggleSection = (section: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

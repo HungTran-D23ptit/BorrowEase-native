@@ -7,19 +7,15 @@ import * as borrowRequestService from '../../../services/user/borrowRequest.serv
 import * as deviceService from '../../../services/user/device.service';
 import { showSuccess, showError } from '../../../services/ToastService';
 import { getImageUrl } from '../../../services/rootApi';
-
-// 👇 Import styles từ file vừa tạo
 import { styles } from './style';
 
 export default function BorrowScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams(); // Nhận id từ route params
+  const { id } = useLocalSearchParams(); 
 
-  // Device info state
   const [device, setDevice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // --- QUẢN LÝ NGÀY THÁNG ---
   const [borrowDate, setBorrowDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(() => {
     const tomorrow = new Date();
@@ -33,7 +29,6 @@ export default function BorrowScreen() {
   const [quantity, setQuantity] = useState(1);
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch device info
   useEffect(() => {
     const fetchDevice = async () => {
       if (!id) {
@@ -70,7 +65,6 @@ export default function BorrowScreen() {
     setShowBorrowPicker(false);
     if (selectedDate) {
       setBorrowDate(selectedDate);
-      // Tự động cập nhật returnDate nếu nó nhỏ hơn borrowDate
       if (returnDate <= selectedDate) {
         const newReturnDate = new Date(selectedDate);
         newReturnDate.setDate(newReturnDate.getDate() + 1);
@@ -86,7 +80,6 @@ export default function BorrowScreen() {
     }
   };
 
-  // --- LOGIC KHÁC ---
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
@@ -96,7 +89,6 @@ export default function BorrowScreen() {
   };
 
   const handleComplete = async () => {
-    // Validation
     if (!purpose.trim()) {
       showError('Vui lòng nhập mục đích mượn');
       return;
@@ -131,9 +123,8 @@ export default function BorrowScreen() {
 
       showSuccess('Đã gửi yêu cầu mượn thiết bị!');
 
-      // Navigate to management page
       setTimeout(() => {
-        router.replace('/user/management' as any);
+        router.back();
       }, 500);
 
     } catch (error: any) {
@@ -166,7 +157,16 @@ export default function BorrowScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/user/explore' as any);
+            }
+          }}
+          style={styles.backButton}
+        >
           <Ionicons name="chevron-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mượn thiết bị</Text>

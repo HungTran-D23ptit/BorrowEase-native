@@ -5,7 +5,6 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 const { width } = Dimensions.get('window');
 
-// Tính toán: (Màn hình - 40px padding - 15px khoảng cách giữa) chia 2
 const CARD_WIDTH = (width - 40 - 15) / 2;
 
 interface Device {
@@ -78,13 +77,11 @@ const DeviceCard = ({ device }: { device: Device }) => {
 const styles = StyleSheet.create({
   cardContainer: {
     width: CARD_WIDTH,
-    // Không đặt marginRight ở đây nữa, cha (parent) sẽ lo việc căn chỉnh
     marginBottom: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#F0F0F0',
-    // Shadow
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -94,7 +91,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     position: 'relative',
-    height: 120, // Giảm chiều cao chút cho cân đối
+    height: 120, 
     width: '100%',
     borderRadius: 8,
     overflow: 'hidden',

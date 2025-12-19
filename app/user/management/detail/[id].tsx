@@ -85,7 +85,7 @@ export default function ManagementDetailScreen() {
             await cancelBorrowRequest(id as string);
             showSuccess("Yêu cầu mượn thiết bị đã được hủy");
             setModalVisible(false);
-            fetchRequestDetail(); // Refresh data
+            fetchRequestDetail(); 
         } catch (error: any) {
             showError(error?.response?.data?.message || 'Không thể hủy yêu cầu');
         } finally {
@@ -98,7 +98,7 @@ export default function ManagementDetailScreen() {
             setActionLoading(true);
             await requestReturnDevice(id as string);
             showSuccess("Đã gửi yêu cầu trả thiết bị");
-            fetchRequestDetail(); // Refresh data
+            fetchRequestDetail(); 
         } catch (error: any) {
             showError(error?.response?.data?.message || 'Không thể gửi yêu cầu trả');
         } finally {

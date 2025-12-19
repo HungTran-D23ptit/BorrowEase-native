@@ -38,7 +38,7 @@ export default function NotificationsScreen() {
         }
 
         if (notification.related_type === 'BORROW_REQUEST' && notification.related_id) {
-            router.push(`/admin/borrowing`);
+            router.push(`/admin/borrowing?requestId=${notification.related_id}` as any);
         }
     };
 

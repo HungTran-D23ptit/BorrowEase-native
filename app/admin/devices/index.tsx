@@ -99,7 +99,6 @@ export default function AdminDevices() {
       });
       refresh();
     } catch (error) {
-      // Error handled in hook
     }
   };
 

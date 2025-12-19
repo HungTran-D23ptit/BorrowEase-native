@@ -64,12 +64,10 @@ export default function CustomToast({
         if (visible) {
             setIsShowing(true);
 
-            // Clear any existing timeout
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
 
-            // Show animation
             Animated.parallel([
                 Animated.spring(translateY, {
                     toValue: 0,
@@ -84,12 +82,10 @@ export default function CustomToast({
                 }),
             ]).start();
 
-            // Auto hide after duration
             timeoutRef.current = setTimeout(() => {
                 handleClose();
             }, duration);
         } else {
-            // Hide animation
             Animated.parallel([
                 Animated.timing(translateY, {
                     toValue: -100,

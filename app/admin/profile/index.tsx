@@ -1,58 +1,62 @@
 import { useToast } from '@/contexts/ToastContext';
 import { useAdminLogin } from '@/hooks/admin/useAuth';
+import { useAdminProfile } from '@/hooks/admin/useProfile';
+import { useStatistics } from '@/hooks/admin/useStatistics';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
+
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=Admin&background=334155&color=fff&size=200&bold=true';
 
 const MENU_ITEMS = [
     {
         id: 1,
-        title: 'Thông tin cá nhân',
-        icon: 'person-outline',
-        iconType: 'ionicons',
+        title: 'Trang chủ',
+        icon: 'home-outline',
+        route: '/admin/home',
         color: '#2196F3',
         bgColor: '#E3F2FD',
     },
     {
         id: 2,
-        title: 'Bảo mật',
-        icon: 'shield-checkmark-outline',
-        iconType: 'ionicons',
+        title: 'Quản lý thiết bị',
+        icon: 'phone-portrait-outline',
+        route: '/admin/devices',
         color: '#4CAF50',
         bgColor: '#E8F5E9',
     },
     {
         id: 3,
-        title: 'Thông báo',
-        icon: 'notifications-outline',
-        iconType: 'ionicons',
+        title: 'Quản lý mượn trả',
+        icon: 'swap-horizontal-outline',
+        route: '/admin/borrowing',
         color: '#FF9800',
         bgColor: '#FFF3E0',
     },
     {
         id: 4,
-        title: 'Nhật ký hoạt động',
-        icon: 'time-outline',
-        iconType: 'ionicons',
+        title: 'Thống kê',
+        icon: 'stats-chart-outline',
+        route: '/admin/Statistical',
         color: '#9C27B0',
         bgColor: '#F3E5F5',
     },
     {
         id: 5,
-        title: 'Cài đặt hệ thống',
-        icon: 'settings-outline',
-        iconType: 'ionicons',
+        title: 'Quản lý người dùng',
+        icon: 'people-outline',
+        route: '/admin/UserManagement',
         color: '#607D8B',
         bgColor: '#ECEFF1',
     },
     {
         id: 6,
-        title: 'Trợ giúp & Hỗ trợ',
-        icon: 'help-circle-outline',
-        iconType: 'ionicons',
+        title: 'Thông báo',
+        icon: 'notifications-outline',
+        route: '/admin/notifications',
         color: '#00BCD4',
         bgColor: '#E0F7FA',
     },
@@ -61,6 +65,8 @@ const MENU_ITEMS = [
 export default function AdminProfile() {
     const router = useRouter();
     const { logout } = useAdminLogin();
+    const { profile, loading, refreshing, refresh } = useAdminProfile();
+    const { userStats, deviceStats, requestStats, refreshing: statsRefreshing } = useStatistics();
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const { showWarning } = useToast();
@@ -69,26 +75,25 @@ export default function AdminProfile() {
         setLogoutModalVisible(true);
     };
 
+    const handleMenuPress = (item: any) => {
+        router.push(item.route as any);
+    };
+
     const confirmLogout = async () => {
         setIsLoggingOut(true);
         try {
             await logout();
-            router.replace('/auth/login');
+            router.replace('/auth/login' as any);
         } catch (error) {
-            router.replace('/auth/login');
+            router.replace('/auth/login' as any);
         } finally {
             setIsLoggingOut(false);
             setLogoutModalVisible(false);
         }
     };
 
-    const handleMenuPress = (item: any) => {
-        showWarning('Tính năng đang được phát triển');
-    };
-
     return (
         <View style={styles.container}>
-            {/* GRADIENT HEADER */}
             <LinearGradient
                 colors={['#1E293B', '#334155']}
                 start={{ x: 0, y: 0 }}
@@ -99,71 +104,95 @@ export default function AdminProfile() {
                 <Text style={styles.headerSubtitle}>Quản lý thông tin tài khoản</Text>
             </LinearGradient>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-
-                {/* PROFILE CARD */}
-                <View style={styles.profileCard}>
-                    <View style={styles.avatarContainer}>
-                        <Image
-                            source={{ uri: 'https://via.placeholder.com/120x120?text=Admin' }}
-                            style={styles.avatarImage}
+            {loading && !profile ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#334155" />
+                    <Text style={{ marginTop: 12, color: '#666', fontSize: 14 }}>Đang tải thông tin...</Text>
+                </View>
+            ) : (
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={refresh}
+                            colors={['#334155']}
+                            tintColor="#334155"
                         />
-                        <TouchableOpacity style={styles.editAvatarButton}>
-                            <Ionicons name="camera" size={18} color="#FFF" />
-                        </TouchableOpacity>
+                    }
+                >
+
+                    <View style={styles.profileCard}>
+                        <View style={styles.avatarContainer}>
+                            <Image
+                                source={{
+                                    uri: profile?.avatar || DEFAULT_AVATAR
+                                }}
+                                style={styles.avatarImage}
+                            />
+                            <TouchableOpacity style={styles.editAvatarButton}>
+                                <Ionicons name="camera" size={18} color="#FFF" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.profileName}>{profile?.name || 'Quản trị viên'}</Text>
+                        <Text style={styles.profileEmail}>{profile?.email || 'admin@borrowease.com'}</Text>
+                        <Text style={styles.profileRole}>
+                            {profile?.role === 'admin' ? 'Administrator' : 'Admin'}
+                        </Text>
                     </View>
-                    <Text style={styles.profileName}>Quản trị viên</Text>
-                    <Text style={styles.profileEmail}>admin@borrowease.com</Text>
-                    <Text style={styles.profileRole}>Administrator</Text>
-                </View>
 
-                {/* STATS */}
-                <View style={styles.statsContainer}>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statValue}>156</Text>
-                        <Text style={styles.statLabel}>Thiết bị</Text>
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>
+                                {deviceStats?.total || 0}
+                            </Text>
+                            <Text style={styles.statLabel}>Thiết bị</Text>
+                        </View>
+                        <View style={styles.statDivider} />
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>
+                                {requestStats?.APPROVED || 0}
+                            </Text>
+                            <Text style={styles.statLabel}>Đang mượn</Text>
+                        </View>
+                        <View style={styles.statDivider} />
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>
+                                {userStats?.total || 0}
+                            </Text>
+                            <Text style={styles.statLabel}>Người dùng</Text>
+                        </View>
                     </View>
-                    <View style={styles.statDivider} />
-                    <View style={styles.statItem}>
-                        <Text style={styles.statValue}>42</Text>
-                        <Text style={styles.statLabel}>Đang mượn</Text>
+
+                    <View style={styles.menuSection}>
+                        {MENU_ITEMS.map((item) => (
+                            <TouchableOpacity
+                                key={item.id}
+                                style={styles.menuItem}
+                                onPress={() => handleMenuPress(item)}
+                            >
+                                <View style={[styles.menuIcon, { backgroundColor: item.bgColor }]}>
+                                    <Ionicons name={item.icon as any} size={24} color={item.color} />
+                                </View>
+                                <Text style={styles.menuText}>{item.title}</Text>
+                                <Ionicons name="chevron-forward" size={20} color="#CCC" />
+                            </TouchableOpacity>
+                        ))}
                     </View>
-                    <View style={styles.statDivider} />
-                    <View style={styles.statItem}>
-                        <Text style={styles.statValue}>89</Text>
-                        <Text style={styles.statLabel}>Người dùng</Text>
+
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <MaterialCommunityIcons name="logout" size={22} color="#F44336" />
+                        <Text style={styles.logoutText}>Đăng xuất</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.versionContainer}>
+                        <Text style={styles.versionText}>BorrowEase Admin v1.0.0</Text>
                     </View>
-                </View>
 
-                {/* MENU ITEMS */}
-                <View style={styles.menuSection}>
-                    {MENU_ITEMS.map((item) => (
-                        <TouchableOpacity
-                            key={item.id}
-                            style={styles.menuItem}
-                            onPress={() => handleMenuPress(item)}
-                        >
-                            <View style={[styles.menuIcon, { backgroundColor: item.bgColor }]}>
-                                <Ionicons name={item.icon as any} size={24} color={item.color} />
-                            </View>
-                            <Text style={styles.menuText}>{item.title}</Text>
-                            <Ionicons name="chevron-forward" size={20} color="#CCC" />
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {/* LOGOUT BUTTON */}
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                    <MaterialCommunityIcons name="logout" size={22} color="#F44336" />
-                    <Text style={styles.logoutText}>Đăng xuất</Text>
-                </TouchableOpacity>
-
-                <View style={styles.versionContainer}>
-                    <Text style={styles.versionText}>BorrowEase Admin v1.0.0</Text>
-                </View>
-
-                <View style={{ height: 100 }} />
-            </ScrollView>
+                    <View style={{ height: 100 }} />
+                </ScrollView>
+            )}
 
             {/* LOGOUT CONFIRMATION MODAL */}
             <Modal

@@ -8,7 +8,6 @@ export const detailStyles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
 
-    // Header
     headerGradient: {
         paddingTop: 40,
         paddingBottom: 12,
@@ -35,7 +34,6 @@ export const detailStyles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    // Loading & Error
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -74,12 +72,10 @@ export const detailStyles = StyleSheet.create({
         fontWeight: '700',
     },
 
-    // Scroll View
     scrollView: {
         flex: 1,
     },
 
-    // Image Section
     imageSection: {
         position: 'relative',
         marginTop: -10,
@@ -126,7 +122,6 @@ export const detailStyles = StyleSheet.create({
         fontWeight: '700',
     },
 
-    // Info Section
     infoSection: {
         padding: 20,
     },
@@ -189,7 +184,6 @@ export const detailStyles = StyleSheet.create({
         fontWeight: '600',
     },
 
-    // Description
     descriptionCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 16,
@@ -213,7 +207,6 @@ export const detailStyles = StyleSheet.create({
         lineHeight: 22,
     },
 
-    // Specifications
     specCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 16,
@@ -245,7 +238,6 @@ export const detailStyles = StyleSheet.create({
         fontWeight: '500',
     },
 
-    // History Section
     historySection: {
         backgroundColor: '#FFFFFF',
         borderRadius: 16,
@@ -386,7 +378,6 @@ export const detailStyles = StyleSheet.create({
         fontWeight: '500',
     },
 
-    // Bottom Bar
     bottomBar: {
         position: 'absolute',
         bottom: 0,

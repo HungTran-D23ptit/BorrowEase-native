@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -11,6 +12,7 @@ import {
 
 
 export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -114,6 +116,16 @@ export const LoginForm = ({ onLogin, loading, error, userType = "user" }) => {
           <Ionicons name="alert-circle" size={14} color="#EF4444" />
           <Text style={styles.error}>{errors.password}</Text>
         </View>
+      )}
+
+      {/* Forgot Password Link - Only for user login */}
+      {userType === "user" && (
+        <TouchableOpacity
+          style={styles.forgotPasswordContainer}
+          onPress={() => router.push("/auth/forgot-password")}
+        >
+          <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+        </TouchableOpacity>
       )}
 
       {error && (
@@ -618,6 +630,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
+  },
+  forgotPasswordContainer: {
+    alignSelf: "flex-end",
+    marginBottom: 8,
+    marginTop: -8,
+  },
+  forgotPasswordText: {
+    color: "#334155",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

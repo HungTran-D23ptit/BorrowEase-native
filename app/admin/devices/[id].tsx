@@ -97,7 +97,6 @@ export default function AdminDeviceDetail() {
             setEditModalVisible(false);
             refresh();
         } catch (error) {
-            // Error handled in hook
         }
     };
 
@@ -115,7 +114,6 @@ export default function AdminDeviceDetail() {
                             await deleteDevice(id as string);
                             router.push('/admin/devices');
                         } catch (error) {
-                            // Error handled in hook
                         }
                     },
                 },
@@ -136,7 +134,6 @@ export default function AdminDeviceDetail() {
                             await markMaintenance(id as string);
                             refresh();
                         } catch (error) {
-                            // Error handled in hook
                         }
                     },
                 },
@@ -145,7 +142,6 @@ export default function AdminDeviceDetail() {
     };
 
     const renderReviewItem = ({ item }: any) => {
-        // API trả về user là object với name và avatar
         const userName = item.user?.name || 'Người dùng';
         const userAvatar = item.user?.avatar;
 

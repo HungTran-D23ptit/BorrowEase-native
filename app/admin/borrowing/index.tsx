@@ -4,8 +4,8 @@ import { useNotificationModal } from '@/hooks/useNotificationModal';
 import { getImageUrl } from '@/services/rootApi';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Image,
@@ -40,6 +40,7 @@ const STATUS_CONFIG: Record<BorrowStatus, { label: string; color: string; bgColo
 
 export default function BorrowingManagementScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedSection, setExpandedSection] = useState<BorrowStatus | null>('PENDING');
     const [rejectNote, setRejectNote] = useState('');
@@ -49,12 +50,10 @@ export default function BorrowingManagementScreen() {
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const [confirmReturnModal, setConfirmReturnModal] = useState<{ visible: boolean; id: string | null }>({ visible: false, id: null });
 
-    // Use notification modal instead of Toast
     const { modalState, showError, showSuccess, hideModal } = useNotificationModal();
 
     const { stats } = useBorrowRequestStats();
 
-    // Fetch detail when selectedRequestId changes
     const { request: detailRequest, loading: detailLoading, refresh: refreshDetail } = useBorrowRequestDetail(selectedRequestId);
 
     const { approveRequest, rejectRequest, confirmReturn, loading: actionLoading } = useBorrowRequestActions({
@@ -77,6 +76,13 @@ export default function BorrowingManagementScreen() {
         RETURNED: returnedData,
         REJECTED: rejectedData,
     };
+
+    useEffect(() => {
+        if (params.requestId && typeof params.requestId === 'string') {
+            setSelectedRequestId(params.requestId);
+            setDetailModalVisible(true);
+        }
+    }, [params.requestId]);
 
     const toggleSection = (section: BorrowStatus) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -226,7 +232,6 @@ export default function BorrowingManagementScreen() {
         const config = STATUS_CONFIG[status];
         const data = statusDataMap[status];
         const isOpen = expandedSection === status;
-        // Lấy số lượng thực tế từ data đã load thay vì từ stats
         const count = data?.requests.length ?? 0;
 
         const filteredRequests = data?.requests.filter((req: any) => {

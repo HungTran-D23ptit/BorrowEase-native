@@ -130,7 +130,16 @@ export default function DeviceDetailScreen() {
         style={styles.headerGradient}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/user/explore' as any);
+              }
+            }}
+            style={styles.backBtn}
+          >
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Chi tiết thiết bị</Text>

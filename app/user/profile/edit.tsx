@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Platform, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import * as profileService from '../../../services/user/profile.service';
 import { showSuccess, showError } from '../../../services/ToastService';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getImageUrl } from '../../../services/rootApi';
 
 export default function EditProfileScreen() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    // Form states
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -19,8 +21,9 @@ export default function EditProfileScreen() {
     const [dob, setDob] = useState<Date | null>(null);
     const [address, setAddress] = useState('');
     const [department, setDepartment] = useState('');
+    const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
+    const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
 
-    // Date picker
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     useEffect(() => {
@@ -36,6 +39,7 @@ export default function EditProfileScreen() {
             setGender(data.gender || '');
             setAddress(data.address || '');
             setDepartment(data.department || '');
+            setCurrentAvatar(data.avatar_url || null);
             if (data.dob) {
                 setDob(new Date(data.dob));
             }
@@ -44,6 +48,44 @@ export default function EditProfileScreen() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            showError('Bạn cần cấp quyền truy cập thư viện ảnh');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+            setNewAvatarUri(result.assets[0].uri);
+        }
+    };
+
+    const removeAvatar = () => {
+        Alert.alert(
+            'Xác nhận',
+            'Bạn có chắc muốn xóa ảnh đại diện?',
+            [
+                { text: 'Hủy', style: 'cancel' },
+                {
+                    text: 'Xóa',
+                    style: 'destructive',
+                    onPress: () => {
+                        setNewAvatarUri(null);
+                        setCurrentAvatar(null);
+                    },
+                },
+            ]
+        );
     };
 
     const handleSave = async () => {
@@ -66,7 +108,15 @@ export default function EditProfileScreen() {
                 updateData.dob = dob.toISOString();
             }
 
-            await profileService.updateProfile(updateData);
+            if (newAvatarUri) {
+                await profileService.updateProfileWithAvatar(updateData, newAvatarUri);
+            } else if (currentAvatar === null && newAvatarUri === null) {
+                updateData.avatar = 'remove';
+                await profileService.updateProfile(updateData);
+            } else {
+                await profileService.updateProfile(updateData);
+            }
+
             showSuccess('Cập nhật thông tin thành công');
             router.back();
         } catch (error: any) {
@@ -86,17 +136,62 @@ export default function EditProfileScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Chỉnh sửa thông tin</Text>
-                <View style={{ width: 40 }} />
-            </View>
+            {/* Gradient Header */}
+            <LinearGradient
+                colors={['#334155', '#475569']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.headerGradient}
+            >
+                <View style={styles.headerContent}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => {
+                            if (router.canGoBack()) {
+                                router.back();
+                            } else {
+                                router.replace('/user/profile' as any);
+                            }
+                        }}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#FFF" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Chỉnh sửa thông tin</Text>
+                    <View style={{ width: 40 }} />
+                </View>
+            </LinearGradient>
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <View style={styles.form}>
+                    {/* Avatar Section */}
+                    <View style={styles.avatarSection}>
+                        <View style={styles.avatarContainer}>
+                            {newAvatarUri || currentAvatar ? (
+                                <Image
+                                    source={{ uri: newAvatarUri || getImageUrl(currentAvatar!) }}
+                                    style={styles.avatar}
+                                />
+                            ) : (
+                                <View style={styles.avatarPlaceholder}>
+                                    <Ionicons name="person" size={48} color="#999" />
+                                </View>
+                            )}
+                        </View>
+                        <View style={styles.avatarButtons}>
+                            <TouchableOpacity style={styles.avatarButton} onPress={pickImage}>
+                                <Ionicons name="camera" size={20} color="#FF6B35" />
+                                <Text style={styles.avatarButtonText}>
+                                    {newAvatarUri || currentAvatar ? 'Đổi ảnh' : 'Chọn ảnh'}
+                                </Text>
+                            </TouchableOpacity>
+                            {(newAvatarUri || currentAvatar) && (
+                                <TouchableOpacity style={styles.avatarButtonRemove} onPress={removeAvatar}>
+                                    <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                                    <Text style={styles.avatarButtonTextRemove}>Xóa ảnh</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    </View>
                     {/* Name */}
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Họ tên <Text style={styles.required}>*</Text></Text>
@@ -255,6 +350,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#E5E5E5',
     },
+    headerGradient: {
+        paddingTop: 50,
+        paddingBottom: 16,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+    },
     backButton: {
         width: 40,
         height: 40,
@@ -262,15 +367,77 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#FFF',
     },
     scrollView: {
         flex: 1,
     },
     form: {
         padding: 16,
+    },
+    avatarSection: {
+        alignItems: 'center',
+        marginBottom: 24,
+        paddingVertical: 16,
+    },
+    avatarContainer: {
+        marginBottom: 16,
+    },
+    avatar: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: '#FF6B35',
+    },
+    avatarPlaceholder: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#F3F4F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#E5E5E5',
+        borderStyle: 'dashed',
+    },
+    avatarButtons: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    avatarButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: '#FFF3EF',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#FF6B35',
+    },
+    avatarButtonText: {
+        color: '#FF6B35',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    avatarButtonRemove: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: '#FEF2F2',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#EF4444',
+    },
+    avatarButtonTextRemove: {
+        color: '#EF4444',
+        fontSize: 14,
+        fontWeight: '600',
     },
     inputGroup: {
         marginBottom: 20,

@@ -1,5 +1,22 @@
 import { apiAxios } from '../rootApi';
 
+const mapDeviceStatus = (device) => {
+    let frontendStatus = 'available';
+    if (device.status === 'MAINTENANCE') {
+        frontendStatus = 'maintenance';
+    } else if (device.quantity <= 0) {
+        frontendStatus = 'unavailable';
+    } else {
+        frontendStatus = 'available';
+    }
+
+    return {
+        ...device,
+        status: frontendStatus,
+        available_quantity: device.quantity || 0,
+    };
+};
+
 export const getDevices = async (params = {}) => {
     try {
         const { page = 1, per_page = 10, status, search } = params;
@@ -16,6 +33,11 @@ export const getDevices = async (params = {}) => {
             method: 'get',
             url: `/user/device?${queryParams.toString()}`,
         });
+
+        if (response.data?.data) {
+            response.data.data = response.data.data.map(mapDeviceStatus);
+        }
+
         return response.data;
     } catch (error) {
         console.error('Error fetching devices:', error);
@@ -36,7 +58,13 @@ export const getDeviceDetail = async (deviceId, params = {}) => {
             method: 'get',
             url: `/user/device/${deviceId}?${queryParams.toString()}`,
         });
-        return response.data;
+
+        const data = response.data;
+        if (data) {
+            return mapDeviceStatus(data);
+        }
+
+        return data;
     } catch (error) {
         throw error;
     }
@@ -48,9 +76,18 @@ export const getRecommendedDevices = async () => {
             method: 'get',
             url: '/user/device/recommendations/me',
         });
-        return response.data;
+
+        const devices = response.data?.result || [];
+
+        const availableDevices = devices.filter(device => {
+            return device.status !== 'MAINTENANCE' && device.quantity > 0;
+        });
+
+        const processedDevices = availableDevices.map(mapDeviceStatus);
+
+        return { devices: processedDevices };
     } catch (error) {
         console.error('Error fetching recommended devices:', error);
-        throw error;
+        return { devices: [] };
     }
 };
